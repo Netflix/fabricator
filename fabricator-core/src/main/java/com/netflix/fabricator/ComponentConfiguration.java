@@ -5,18 +5,15 @@ import java.util.Set;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
 /**
- * The mapper provides a configuration bridge between an instance of a type
- * and a configuration.  The mapper works with the ComponentManager in that it
- * provides additional information such as the key and type specified in the 
- * configuration so that the manager may create the appropriate type and then
- * call the mapper to apply the configuration to the created object.
+ * ComponentConfiguration encapsulates the configuration for a specific component
+ * with a given id and type.
  * 
- * There will be one implementation of Mapper for each configuration type such
- * as .properties file or JSON payload from a request.
+ * A ComponentConfiguration may be rooted at the source of a configuration or may
+ * be derived from a large configuration file/source.  
  * 
  * @author elandau
  */
-public interface ConfigurationSource {
+public interface ComponentConfiguration {
     /**
      * Provide the unique key for the component specified in the configuration.
      * Can be null for components that are not to be cached or when accessing
@@ -88,5 +85,5 @@ public interface ConfigurationSource {
      *
      * @return
      */
-    public ConfigurationSource getChild(String propertyName);
+    public ComponentConfiguration getChild(String propertyName);
 }

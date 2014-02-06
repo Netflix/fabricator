@@ -26,5 +26,5 @@ package com.netflix.fabricator;
  *
  */
 public interface PropertyBinder {
-    public boolean bind(Object obj, ConfigurationSource mapper) throws Exception;
+    public boolean bind(Object obj, ComponentConfiguration config) throws Exception;
 }

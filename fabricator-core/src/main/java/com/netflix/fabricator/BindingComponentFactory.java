@@ -37,7 +37,7 @@ public class BindingComponentFactory<T>  {
     private final ComponentFactory<T>        factory;
     
     public static interface Instantiator {
-        public Object create(ConfigurationSource config) throws Exception ;
+        public Object create(ComponentConfiguration config) throws Exception ;
     }
     
     /**
@@ -69,7 +69,7 @@ public class BindingComponentFactory<T>  {
             if (Builder.class.isAssignableFrom(clazz)) {
                 this.builderClass = clazz;
                 this.instantiator = new Instantiator() {
-                    public Object create(@Nullable ConfigurationSource mapper) {
+                    public Object create(@Nullable ComponentConfiguration mapper) {
                         return (Builder<?>) injector.getInstance(clazz);
                     }
                 };
@@ -80,7 +80,7 @@ public class BindingComponentFactory<T>  {
                 final Method method = clazz.getMethod(BUILDER_METHOD_NAME);
                 this.builderClass = method.invoke(null, (Object[])null).getClass();
                 this.instantiator = new Instantiator() {
-                    public Object create(ConfigurationSource mapper) throws Exception {
+                    public Object create(ComponentConfiguration mapper) throws Exception {
                         return method.invoke(null, (Object[])null);
                     }
                 };
@@ -92,7 +92,7 @@ public class BindingComponentFactory<T>  {
                 if (inner.getSimpleName().equals("Builder")) {
                     this.builderClass = inner;
                     this.instantiator = new Instantiator() {
-                        public Object create(ConfigurationSource mapper) {
+                        public Object create(ComponentConfiguration mapper) {
                             return injector.getInstance(inner);
                         }
                     };
@@ -107,15 +107,15 @@ public class BindingComponentFactory<T>  {
         this.factory = new ComponentFactory<T>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T create(ConfigurationSource mapper) {
+            public T create(ComponentConfiguration mapper) {
                 try {
                     // 1. Create an instance of the builder.  This still will also do basic
                     //    dependency injection using @Inject.  Named injections will be handled
                     //    by the configuration mapping phase
                     Object builder = instantiator.create(mapper);
 
-                    // 2. Set the 'key'
-                    mapKey(builder, mapper);
+                    // 2. Set the 'id'
+                    mapId(builder, mapper);
 
                     // 3. Apply configuration
                     mapConfiguration(builder, mapper);
@@ -140,7 +140,7 @@ public class BindingComponentFactory<T>  {
         };
     }
 
-    private void mapKey(Object builder, ConfigurationSource mapper) throws Exception {
+    private void mapId(Object builder, ComponentConfiguration mapper) throws Exception {
         if (mapper.getKey() != null) {
             Method idMethod = null;
             try {
@@ -171,7 +171,7 @@ public class BindingComponentFactory<T>  {
      * @param mapper
      * @throws Exception
      */
-    private void mapConfiguration(Object obj, ConfigurationSource mapper) throws Exception {
+    private void mapConfiguration(Object obj, ComponentConfiguration mapper) throws Exception {
         for (Entry<String, PropertyInfo> prop : properties.entrySet()) {
             LOG.trace("Mapping property : " + prop.getKey() + " to " + mapper.getValue(prop.getKey(), String.class));
             try {

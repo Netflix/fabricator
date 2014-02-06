@@ -3,7 +3,7 @@ package com.netflix.fabricator.guice;
 import java.lang.reflect.Method;
 
 import com.netflix.fabricator.BindingComponentFactory;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.InjectionSpi;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderResolver;
@@ -103,13 +103,14 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
         //Any successful step will terminate the sequence
         return new PropertyBinder() {
             @Override
-            public boolean bind(Object obj, ConfigurationSource mapper) throws Exception {
+            public boolean bind(Object obj, ComponentConfiguration config)
+                    throws Exception {
                 // Property value is a simple 'string'
                 // Look for 'named' binding or 'key' in a mapbinder
-                if (mapper.isSimpleProperty(propertyName)) {
-                    String value = mapper.getValue(propertyName, String.class);
+                if (config.isSimpleProperty(propertyName)) {
+                    String value = config.getValue(propertyName, String.class);
                     if (value != null) {
-                        if(simplePropertyInjection.execute(value, obj, mapper)) {
+                        if (simplePropertyInjection.execute(value, obj, config)) {
                             return true;
                         }
                     } 
@@ -119,7 +120,7 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
                 }
                 // Property is a structure
                 else {
-                    compositePropertyInjection.execute(null, obj, mapper);
+                    compositePropertyInjection.execute(null, obj, config);
                 }
                 return false;
             }

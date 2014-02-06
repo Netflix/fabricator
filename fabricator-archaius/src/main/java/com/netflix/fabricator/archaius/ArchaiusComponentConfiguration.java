@@ -14,28 +14,28 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicProperty;
-import com.netflix.fabricator.ConfigurationSource;
-import com.netflix.fabricator.properties.AbstractPropertiesConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.properties.AbstractPropertiesComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
-public class ArchaiusConfigurationSource extends AbstractPropertiesConfigurationSource {
-    private static final Logger LOG = LoggerFactory.getLogger(ArchaiusConfigurationSource.class);
+public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentConfiguration {
+    private static final Logger LOG = LoggerFactory.getLogger(ArchaiusComponentConfiguration.class);
     
     private final AbstractConfiguration config;
     
-    public static ArchaiusConfigurationSource forPrefix(String prefix) {
+    public static ArchaiusComponentConfiguration forPrefix(String prefix) {
         AbstractConfiguration config = ConfigurationManager.getConfigInstance();
         String type = config.getString(prefix + "type");
         String id = StringUtils.substringAfterLast(prefix, ".");
-        return new ArchaiusConfigurationSource(id, type, config, prefix);
+        return new ArchaiusComponentConfiguration(id, type, config, prefix);
     }
     
-    public ArchaiusConfigurationSource(String id, String type, AbstractConfiguration config, String prefix) {
+    public ArchaiusComponentConfiguration(String id, String type, AbstractConfiguration config, String prefix) {
         super(id, type, prefix);
         this.config = config;
     }
 
-    public ArchaiusConfigurationSource(String id, String type, AbstractConfiguration config) {
+    public ArchaiusComponentConfiguration(String id, String type, AbstractConfiguration config) {
         super(id, type);
         this.config = config;
     }
@@ -141,11 +141,11 @@ public class ArchaiusConfigurationSource extends AbstractPropertiesConfiguration
     }
 
     @Override
-    public ConfigurationSource getChild(String name) {
+    public ComponentConfiguration getChild(String name) {
         String prefix = new StringBuilder().append(getPrefix()).append(name).append(".").toString();
         String typePropertyName = prefix + "type";
         
-        return new ArchaiusConfigurationSource(
+        return new ArchaiusComponentConfiguration(
                 null, 
                 config.getString(typePropertyName),
                 config, 

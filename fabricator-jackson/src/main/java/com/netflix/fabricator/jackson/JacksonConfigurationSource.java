@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.jackson.JacksonConfigurationSource;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
-public class JacksonConfigurationSource implements ConfigurationSource {
+public class JacksonConfigurationSource implements ComponentConfiguration {
     private static Logger LOG = LoggerFactory.getLogger(JacksonConfigurationSource.class);
     
     public static abstract class StaticListenableSupplier<T> implements ListenableSupplier<T> {
@@ -49,7 +49,7 @@ public class JacksonConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public ConfigurationSource getChild(String name) {
+    public ComponentConfiguration getChild(String name) {
         return new JacksonConfigurationSource(null, null, node.get(name));
     }
 

@@ -14,9 +14,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.netflix.fabricator.ComponentType;
-import com.netflix.fabricator.ConfigurationFactory;
-import com.netflix.fabricator.ConfigurationSource;
-import com.netflix.fabricator.MainConfigurationFactory;
+import com.netflix.fabricator.ComponentConfigurationResolver;
+import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 
@@ -36,13 +36,13 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
    
     private final ConcurrentMap<String, T>         components = Maps.newConcurrentMap();
     private final Map<String, ComponentFactory<T>> factories;
-    private final ConfigurationFactory             config;
+    private final ComponentConfigurationResolver             config;
     
     @Inject
     public SynchronizedComponentManager(
             ComponentType<T>                 type,
             Map<String, ComponentFactory<T>> factories, 
-            MainConfigurationFactory         config) {
+            TypeConfigurationResolver         config) {
         this.factories = factories;
         this.config = config.getConfigurationFactory(type.getType());
     }
@@ -55,7 +55,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             synchronized (this) {
                 component = components.get(key);
                 if (component == null) {
-                    ConfigurationSource mapper = config.getConfiguration(key);
+                    ComponentConfiguration mapper = config.getConfiguration(key);
                     if (mapper != null) {
                         component = getComponentFactory(mapper.getType()).create(mapper);
                         if (component == null) {
@@ -88,7 +88,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
     
     @Override
-    public synchronized T get(ConfigurationSource mapper) throws ComponentAlreadyExistsException, ComponentCreationException {
+    public synchronized T get(ComponentConfiguration mapper) throws ComponentAlreadyExistsException, ComponentCreationException {
         Preconditions.checkNotNull(mapper,          "Mapper cannot be null");
         Preconditions.checkNotNull(mapper.getKey(), "Mapper must have key");
         
@@ -107,7 +107,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
 
     @Override
-    public synchronized void replaceAll(List<ConfigurationSource> mappers) throws ComponentAlreadyExistsException, ComponentCreationException {
+    public synchronized void replaceAll(List<ComponentConfiguration> mappers) throws ComponentAlreadyExistsException, ComponentCreationException {
 //        Preconditions.checkNotNull(mappers, "Mapper cannot be null");
 //        
 //        Map<String, Holder> newComponents = Maps.newHashMap();

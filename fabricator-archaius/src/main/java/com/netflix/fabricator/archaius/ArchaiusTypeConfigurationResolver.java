@@ -9,9 +9,9 @@ import org.apache.commons.configuration.AbstractConfiguration;
 
 import com.google.common.base.Joiner;
 import com.netflix.config.ConfigurationManager;
-import com.netflix.fabricator.ConfigurationFactory;
-import com.netflix.fabricator.ConfigurationSource;
-import com.netflix.fabricator.MainConfigurationFactory;
+import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ComponentConfigurationResolver;
+import com.netflix.fabricator.TypeConfigurationResolver;
 
 /**
  * Main configuration access using Archaius as the configuration source.
@@ -31,28 +31,28 @@ import com.netflix.fabricator.MainConfigurationFactory;
  *
  */
 @Singleton
-public class ArchaiusMainConfigurationFactory implements MainConfigurationFactory {
+public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResolver {
     private static String DEFAULT_FORMAT_STRING = "%s.%s";
     private static String TYPE_FIELD = "type";
     
     private AbstractConfiguration config = ConfigurationManager.getConfigInstance();
     
-    private final Map<String, ConfigurationFactory> factories;
+    private final Map<String, ComponentConfigurationResolver> overrides;
     
     @Inject
-    public ArchaiusMainConfigurationFactory(Map<String, ConfigurationFactory> factories) {
-        this.factories = factories;
+    public ArchaiusTypeConfigurationResolver(Map<String, ComponentConfigurationResolver> overrides) {
+        this.overrides = overrides;
     }
     
     @Override
-    public ConfigurationFactory getConfigurationFactory(final String type) {
-        ConfigurationFactory factory = factories.get(type);
+    public ComponentConfigurationResolver getConfigurationFactory(final String type) {
+        ComponentConfigurationResolver factory = overrides.get(type);
         if (factory != null)
             return factory;
         
-        return new ConfigurationFactory() {
+        return new ComponentConfigurationResolver() {
             @Override
-            public ConfigurationSource getConfiguration(final String key) {
+            public ComponentConfiguration getConfiguration(final String key) {
                 String prefix    = String.format(DEFAULT_FORMAT_STRING, key, type);
                 String typeField = Joiner.on(".").join(prefix, TYPE_FIELD);
                 String typeValue = config.getString(typeField);
@@ -61,7 +61,7 @@ public class ArchaiusMainConfigurationFactory implements MainConfigurationFactor
                     throw new RuntimeException(String.format("Type for '%s' not specified '%s'", typeField, type));
                 }
                 
-                return new ArchaiusConfigurationSource(
+                return new ArchaiusComponentConfiguration(
                         key,
                         typeValue,
                         config,

@@ -1,6 +1,6 @@
 package com.netflix.fabricator.properties;
 
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 
 /**
  * Base source for 'properties' driven configuration where each 'child' 
@@ -9,18 +9,18 @@ import com.netflix.fabricator.ConfigurationSource;
  * @author elandau
  *
  */
-public abstract class AbstractPropertiesConfigurationSource implements ConfigurationSource {
+public abstract class AbstractPropertiesComponentConfiguration implements ComponentConfiguration {
     private final String     id;
     private final String     type;
     private final String     prefix;
     
-    public AbstractPropertiesConfigurationSource(String id, String type) {
+    public AbstractPropertiesComponentConfiguration(String id, String type) {
         this.id    = id;
         this.type  = type;
         this.prefix = "";
     }
     
-    public AbstractPropertiesConfigurationSource(String id, String type, String prefix) {
+    public AbstractPropertiesComponentConfiguration(String id, String type, String prefix) {
         this.id     = id;
         this.type   = type;
         if (prefix.endsWith(".")) {

@@ -3,7 +3,7 @@ package com.netflix.fabricator.guice.mapping;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.inject.Injector;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -35,9 +35,9 @@ public class SimplePropertyInjection implements PropertyInjectionStrategy {
     }
 
     @Override
-    public boolean execute(String name, Object targetObj, ConfigurationSource mapper) throws Exception {
+    public boolean execute(String name, Object targetObj, ComponentConfiguration config) throws Exception {
         for (BindingReslove eachInjectionStrategy : injectionStrategies) {
-            if (eachInjectionStrategy.execute(name, targetObj, mapper, argType, injector, buildMethod)) {
+            if (eachInjectionStrategy.execute(name, targetObj, config, argType, injector, buildMethod)) {
                 return true;
             }
         }

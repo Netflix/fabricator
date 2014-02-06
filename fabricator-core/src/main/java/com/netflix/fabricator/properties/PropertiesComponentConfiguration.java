@@ -3,7 +3,7 @@ package com.netflix.fabricator.properties;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Supplier;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,17 +12,17 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.Set;
 
-public class PropertiesConfigurationSource extends AbstractPropertiesConfigurationSource {
-    private static final Logger LOG = LoggerFactory.getLogger(PropertiesConfigurationSource.class);
+public class PropertiesComponentConfiguration extends AbstractPropertiesComponentConfiguration {
+    private static final Logger LOG = LoggerFactory.getLogger(PropertiesComponentConfiguration.class);
 
     private final Properties props;
     
-    public PropertiesConfigurationSource(String id, String type, Properties props, String prefix) {
+    public PropertiesComponentConfiguration(String id, String type, Properties props, String prefix) {
         super(id, type, prefix);
         this.props = props;
     }
 
-    public PropertiesConfigurationSource(String id, String type, Properties props) {
+    public PropertiesComponentConfiguration(String id, String type, Properties props) {
         super(id, type);
         this.props = props;
     }
@@ -130,10 +130,10 @@ public class PropertiesConfigurationSource extends AbstractPropertiesConfigurati
     }
 
     @Override
-    public ConfigurationSource getChild(String name) {
+    public ComponentConfiguration getChild(String name) {
         String prefix = getPrefix() + name + ".";
         
-        return new PropertiesConfigurationSource(
+        return new PropertiesComponentConfiguration(
                 null, 
                 props.getProperty(prefix + "type"),     // TODO: Make 'type' configurable
                 props, 

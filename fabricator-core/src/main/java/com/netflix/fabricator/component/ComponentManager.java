@@ -5,7 +5,7 @@ import java.util.List;
 
 import rx.Observable;
 
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 
@@ -49,7 +49,7 @@ public interface ComponentManager<T> {
      * @throws ComponentAlreadyExistsException 
      * @throws ComponentCreationException 
      */
-    public T get(ConfigurationSource mapper) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public T get(ComponentConfiguration mapper) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * Add an externally created entity with the specified key.  Will throw
@@ -75,7 +75,7 @@ public interface ComponentManager<T> {
      * @throws ComponentAlreadyExistsException 
      * @throws ComponentCreationException 
      */
-    public void replaceAll(List<ConfigurationSource> mappers) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public void replaceAll(List<ComponentConfiguration> mappers) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * @return Return a collection of all component keys

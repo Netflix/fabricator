@@ -4,7 +4,7 @@ import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.util.Types;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.component.ComponentFactory;
 
 import java.lang.reflect.Method;
@@ -21,8 +21,8 @@ public class CompositeExistingBinding implements BindingReslove {
     }
 
     @Override
-    public boolean execute(String name, Object obj, ConfigurationSource mapper, Class<?> argType, Injector injector, Method method) throws Exception {
-        ConfigurationSource subMapper = mapper.getChild(propertyName);
+    public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
+        ComponentConfiguration subMapper = config.getChild(propertyName);
         if (subMapper == null)
             return false;
         ParameterizedType subType = Types.newParameterizedType(ComponentFactory.class, argType);

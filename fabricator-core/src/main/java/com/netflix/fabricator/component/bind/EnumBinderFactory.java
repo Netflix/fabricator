@@ -2,7 +2,7 @@ package com.netflix.fabricator.component.bind;
 
 import java.lang.reflect.Method;
 
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderFactory;
 
@@ -23,7 +23,7 @@ public class EnumBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ConfigurationSource mapper) throws Exception {
+                public boolean bind(Object obj, ComponentConfiguration mapper) throws Exception {
                     String value = mapper.getValue(propertyName, String.class);
                     if (value != null) {
                         method.invoke(obj, Enum.valueOf((Class<Enum>)method.getParameterTypes()[0], value));

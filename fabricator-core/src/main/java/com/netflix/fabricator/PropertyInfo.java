@@ -48,7 +48,7 @@ public class PropertyInfo {
         this.binding = binding;
     }
     
-    public void apply(Object obj, ConfigurationSource mapper) throws Exception {
+    public void apply(Object obj, ComponentConfiguration mapper) throws Exception {
              if (binding != null && binding.bind(obj, mapper)) {}
         else if (dynamic != null && dynamic.bind(obj, mapper)) {}
         else if (simple  != null && simple.bind(obj, mapper))  {}

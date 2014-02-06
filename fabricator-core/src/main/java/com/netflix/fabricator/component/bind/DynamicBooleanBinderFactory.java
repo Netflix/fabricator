@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
 import com.google.common.base.Supplier;
-import com.netflix.fabricator.ConfigurationSource;
+import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderFactory;
 import com.netflix.fabricator.supplier.ListenableSupplier;
@@ -33,7 +33,7 @@ public class DynamicBooleanBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ConfigurationSource mapper) throws Exception {
+                public boolean bind(Object obj, ComponentConfiguration mapper) throws Exception {
                     Supplier<?> supplier = mapper.getDynamicValue(propertyName, Boolean.class);
                     if (supplier != null) {
                         //invoke method only when property exists. Otherwise, let builder
