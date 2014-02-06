@@ -485,16 +485,16 @@ public class ComponentFactoryModuleBuilderTest {
                 @Override
                 protected void configure() {
                     install(new ComponentModuleBuilder<SomeInterface>()
-                            .type(BaseA.class)
-                            .type(BaseB.class)
-                            .type(BaseC.class)
-                            .type("d", BaseD.class)
+                            .implementation(BaseA.class)
+                            .implementation(BaseB.class)
+                            .implementation(BaseC.class)
+                            .implementation("d", BaseD.class)
                             .build(SomeInterface.class)
                             );
                     
                     install(new ComponentModuleBuilder<Policy>()
-                            .type(PolicyA.class)
-                            .type(PolicyB.class)
+                            .implementation(PolicyA.class)
+                            .implementation(PolicyB.class)
                             .build(Policy.class));
                 }
             },
@@ -543,7 +543,7 @@ public class ComponentFactoryModuleBuilderTest {
                 @Override
                 protected void configure() {
                     install(new ComponentModuleBuilder<SomeInterface>()
-                            .type("d", BaseD.class)
+                            .implementation(BaseD.class)
                             .build(SomeInterface.class)
                             );
                 }
@@ -604,16 +604,16 @@ public class ComponentFactoryModuleBuilderTest {
                 @Override
                 protected void configure() {
                     install(new ComponentModuleBuilder<SomeInterface>()
-                            .type(BaseA.class)
-                            .type(BaseB.class)
-                            .type(BaseC.class)
-                            .type("d", BaseD.class)
+                            .implementation(BaseA.class)
+                            .implementation(BaseB.class)
+                            .implementation(BaseC.class)
+                            .implementation(BaseD.class)
                             .build(SomeInterface.class)
                             );
                     
                     install(new ComponentModuleBuilder<Policy>()
-                            .type(PolicyA.class)
-                            .type(PolicyB.class)
+                            .implementation(PolicyA.class)
+                            .implementation(PolicyB.class)
                             .build(Policy.class));
                     
                     bind(SomeInterface.class)
@@ -656,15 +656,15 @@ public class ComponentFactoryModuleBuilderTest {
                 @Override
                 protected void configure() {
                     install(new ComponentModuleBuilder<SomeInterface>()
-                            .type(BaseA.class)
-                            .type(BaseB.class)
-                            .type(BaseC.class)
+                            .implementation(BaseA.class)
+                            .implementation(BaseB.class)
+                            .implementation(BaseC.class)
                             .build(SomeInterface.class)
                             );
                     
                     install(new ComponentModuleBuilder<Policy>()
-                            .type(PolicyA.class)
-                            .type(PolicyB.class)
+                            .implementation(PolicyA.class)
+                            .implementation(PolicyB.class)
                             .build(Policy.class));
                     
                     bind(SomeInterface.class)

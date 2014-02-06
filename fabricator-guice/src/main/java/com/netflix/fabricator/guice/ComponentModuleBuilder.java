@@ -86,26 +86,26 @@ public class ComponentModuleBuilder<T> {
 
     /**
      * Identifies a specific subclass of the component type.  The mapper will create
-     * an instance of class 'type' whenever it sees the value 'key' for the type 
+     * an instance of class 'type' whenever it sees the value 'id' for the type 
      * field in the configuration specification (i.e. .properties or .json data)
      * 
      * @param subTypeName
      * @param subType
      */
-    public ComponentModuleBuilder<T> type(String subTypeName, Class<? extends T> subType) {
+    public ComponentModuleBuilder<T> implementation(String subTypeName, Class<? extends T> subType) {
         bindings.put(subTypeName, new GuiceBindingComponentFactoryProvider<T>(subType));
         return this;
     }
 
-    public ComponentModuleBuilder<T> type(Class<? extends T> type) {
+    public ComponentModuleBuilder<T> implementation(Class<? extends T> type) {
         SubType subType = type.getAnnotation(SubType.class);
         Preconditions.checkNotNull(subType);
         bindings.put(subType.value(), new GuiceBindingComponentFactoryProvider<T>((Class<T>) type));
         return this;
     }
     
-    public ComponentModuleBuilder<T> factory(String key, final Class<? extends ComponentFactory<T>> factory) {
-        bindings.put(key, new ComponentFactoryFactoryProvider<T>(factory));
+    public ComponentModuleBuilder<T> factory(String subType, final Class<? extends ComponentFactory<T>> factory) {
+        bindings.put(subType, new ComponentFactoryFactoryProvider<T>(factory));
         return this;
     }
 
@@ -148,24 +148,24 @@ public class ComponentModuleBuilder<T> {
 
     /**
      * Indicate a specific instance for id.  This makes it possible to inject an instance
-     * using @Named('key') instead of the ComponentManager
+     * using @Named('id') instead of the ComponentManager
      * 
-     * @param key
+     * @param id
      * @return
      */
-    public ComponentModuleBuilder<T> named(String key) {
-        ids.add(key);
+    public ComponentModuleBuilder<T> named(String id) {
+        ids.add(id);
         return this;
     }
     
     /**
      * A a named instance of an existing component.  No configuration will be done here.
-     * @param key
+     * @param id
      * @param instance
      * @return
      */
-    public ComponentModuleBuilder<T> named(String key, T instance) {
-        instances.put(key, instance);
+    public ComponentModuleBuilder<T> named(String id, T instance) {
+        instances.put(id, instance);
         return this;
     }
 }

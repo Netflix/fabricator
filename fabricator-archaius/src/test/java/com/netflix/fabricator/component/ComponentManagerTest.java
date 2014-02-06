@@ -36,7 +36,7 @@ import java.util.Properties;
  * Test Driven development for Beaver library.
  * Prerequisites:
  * Environment:
- * 1. Guice injector envrionment to inject anything
+ * 1. Guice injector environment to inject anything
  * 2. Archaius
  * 3. Jackson
  * 4. Properties files
@@ -515,13 +515,13 @@ public class ComponentManagerTest {
                     @Override
                     protected void configure() {
                         install(new ComponentModuleBuilder<SomeInterface>()
-                                .type(BaseA.class)
+                                .implementation(BaseA.class)
                                 .build(SomeInterface.class)
                         );
 
                         install(new ComponentModuleBuilder<Policy>()
-                                .type(PolicyA.class)
-                                .type(PolicyB.class)
+                                .implementation(PolicyA.class)
+                                .implementation(PolicyB.class)
                                 .build(Policy.class));
                     }
                 },
@@ -569,16 +569,16 @@ public class ComponentManagerTest {
                     @Override
                     protected void configure() {
                         install(new ComponentModuleBuilder<SomeInterface>()
-                                .type("a", BaseA.class)
-                                .type("b", BaseB.class)
-                                .type("c", BaseC.class)
-                                .type("d", BaseD.class)
+                                .implementation(BaseA.class)
+                                .implementation(BaseB.class)
+                                .implementation(BaseC.class)
+                                .implementation(BaseD.class)
                                 .build(SomeInterface.class)
                         );
 
                         install(new ComponentModuleBuilder<Policy>()
-                                .type("pa", PolicyA.class)
-                                .type("pb", PolicyB.class)
+                                .implementation(PolicyA.class)
+                                .implementation("pb", PolicyB.class)
                                 .build(Policy.class));
                     }
                 },
