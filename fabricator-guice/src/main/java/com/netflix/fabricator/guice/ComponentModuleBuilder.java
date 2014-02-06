@@ -17,7 +17,7 @@ import com.google.inject.name.Names;
 import com.google.inject.util.Types;
 import com.netflix.fabricator.Builder;
 import com.netflix.fabricator.ComponentType;
-import com.netflix.fabricator.annotations.SubType;
+import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
 import com.netflix.fabricator.component.ComponentFactory;
 import com.netflix.fabricator.component.ComponentManager;
@@ -42,7 +42,7 @@ public class ComponentModuleBuilder<T> {
             protected void configure() {
                 if (managerClass != null) {
                     Type typeAnnot = type.getAnnotation(Type.class);
-                    Preconditions.checkNotNull("Missing @Type annotation for " + type.getCanonicalName());
+                    Preconditions.checkNotNull(typeAnnot, "Missing @Type annotation for " + type.getCanonicalName());
                     TypeLiteral<ComponentType<T>> componentType = (TypeLiteral<ComponentType<T>>) TypeLiteral.get(Types.newParameterizedType(ComponentType.class, type));
                     bind(componentType)
                         .toInstance(new ComponentType<T>(typeAnnot.value()));
@@ -98,7 +98,7 @@ public class ComponentModuleBuilder<T> {
     }
 
     public ComponentModuleBuilder<T> implementation(Class<? extends T> type) {
-        SubType subType = type.getAnnotation(SubType.class);
+        TypeImplementation subType = type.getAnnotation(TypeImplementation.class);
         Preconditions.checkNotNull(subType);
         bindings.put(subType.value(), new GuiceBindingComponentFactoryProvider<T>((Class<T>) type));
         return this;

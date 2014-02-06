@@ -11,7 +11,7 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
 import com.netflix.fabricator.ComponentType;
-import com.netflix.fabricator.annotations.SubType;
+import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
 import com.netflix.fabricator.component.ComponentManager;
 import com.netflix.fabricator.component.ComponentManagerTest;
@@ -98,7 +98,7 @@ public class ComponentManagerTest {
      * @author elandau
      *
      */
-    @SubType("policy")
+    @TypeImplementation("policy")
     public static interface Policy {
     }
 
@@ -107,7 +107,7 @@ public class ComponentManagerTest {
      *
      * @author elandau
      */
-    @SubType("pa")
+    @TypeImplementation("pa")
     public static class PolicyA implements Policy {
         private final String  s;
         private final Long    l;
@@ -177,7 +177,7 @@ public class ComponentManagerTest {
      * @author elandau
      *
      */
-    @SubType("pb")
+    @TypeImplementation("pb")
     public static class PolicyB implements Policy {
         private final Supplier<String> arg1;
 
@@ -224,7 +224,7 @@ public class ComponentManagerTest {
      * @author elandau
      *
      */
-    @SubType("a")
+    @TypeImplementation("a")
     public static class BaseA extends SomeInterface {
         public static class Builder {
             private String id;
@@ -303,7 +303,7 @@ public class ComponentManagerTest {
      * @author elandau
      *
      */
-    @SubType("b")
+    @TypeImplementation("b")
     public static class BaseB extends SomeInterface {
         public static class Builder {
             private String id;
@@ -330,7 +330,7 @@ public class ComponentManagerTest {
         }
     }
 
-    @SubType("c")
+    @TypeImplementation("c")
     public static class BaseC extends SomeInterface {
         public static class Builder {
             private SubEntity entity;
@@ -365,7 +365,7 @@ public class ComponentManagerTest {
         }
     }
 
-    @SubType("d")
+    @TypeImplementation("d")
     public static class BaseD extends SomeInterface {
         private final String  s;
         private final Long    l;

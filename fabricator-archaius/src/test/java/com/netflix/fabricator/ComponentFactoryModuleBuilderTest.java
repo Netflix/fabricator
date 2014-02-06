@@ -26,7 +26,7 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.fabricator.archaius.ArchaiusConfigurationModule;
-import com.netflix.fabricator.annotations.SubType;
+import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
 import com.netflix.fabricator.component.ComponentManager;
 import com.netflix.fabricator.component.SynchronizedComponentManager;
@@ -88,7 +88,7 @@ public class ComponentFactoryModuleBuilderTest {
      * 
      * @author elandau
      */
-    @SubType("pa")
+    @TypeImplementation("pa")
     public static class PolicyA implements Policy {
         private final String  s;
         private final Long    l;
@@ -158,7 +158,7 @@ public class ComponentFactoryModuleBuilderTest {
      * @author elandau
      *
      */
-    @SubType("pb")
+    @TypeImplementation("pb")
     public static class PolicyB implements Policy {
         private final Supplier<String> arg1;
         
@@ -214,7 +214,7 @@ public class ComponentFactoryModuleBuilderTest {
      * @author elandau
      *
      */
-    @SubType("a")
+    @TypeImplementation("a")
     public static class BaseA extends SomeInterface {
         public static class Builder {
             private String id;
@@ -289,7 +289,7 @@ public class ComponentFactoryModuleBuilderTest {
      * @author elandau
      *
      */
-    @SubType("b")
+    @TypeImplementation("b")
     public static class BaseB extends SomeInterface {
         public static class Builder {
             private String id;
@@ -316,7 +316,7 @@ public class ComponentFactoryModuleBuilderTest {
         }
     }
     
-    @SubType("c")
+    @TypeImplementation("c")
     public static class BaseC extends SomeInterface {
         public static class Builder {
             private SubEntity entity;
@@ -351,7 +351,7 @@ public class ComponentFactoryModuleBuilderTest {
         }
     }
     
-    @SubType("d")
+    @TypeImplementation("d")
     public static class BaseD extends SomeInterface {
         private final String  s;
         private final Long    l;
@@ -488,7 +488,7 @@ public class ComponentFactoryModuleBuilderTest {
                             .implementation(BaseA.class)
                             .implementation(BaseB.class)
                             .implementation(BaseC.class)
-                            .implementation("d", BaseD.class)
+                            .implementation(BaseD.class)
                             .build(SomeInterface.class)
                             );
                     

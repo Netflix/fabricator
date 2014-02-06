@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface SubType {
+public @interface TypeImplementation {
     String value();
 }
