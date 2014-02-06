@@ -48,10 +48,10 @@ public class PropertyInfo {
         this.binding = binding;
     }
     
-    public void apply(Object obj, ComponentConfiguration mapper) throws Exception {
-             if (binding != null && binding.bind(obj, mapper)) {}
-        else if (dynamic != null && dynamic.bind(obj, mapper)) {}
-        else if (simple  != null && simple.bind(obj, mapper))  {}
+    public void apply(Object obj, ComponentConfiguration config) throws Exception {
+             if (binding != null && binding.bind(obj, config)) {}
+        else if (dynamic != null && dynamic.bind(obj, config)) {}
+        else if (simple  != null && simple.bind(obj, config))  {}
     }
     
     public String getName() {

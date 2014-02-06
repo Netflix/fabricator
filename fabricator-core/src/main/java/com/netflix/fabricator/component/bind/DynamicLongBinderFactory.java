@@ -33,8 +33,8 @@ public class DynamicLongBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ComponentConfiguration mapper) throws Exception {
-                    Supplier<?> supplier = mapper.getDynamicValue(propertyName, Long.class);
+                public boolean bind(Object obj, ComponentConfiguration config) throws Exception {
+                    Supplier<?> supplier = config.getDynamicValue(propertyName, Long.class);
                     if (supplier != null) {
                         //invoke method only when property exists. Otherwise, let builder
                         //plug-in default values

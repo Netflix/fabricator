@@ -24,9 +24,9 @@ public class CompositeNoExistingBinding implements BindingReslove {
 
     @Override
     public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
-        ComponentConfiguration subMapper = config.getChild(propertyName);
-        if (subMapper != null) {
-            Object subObject = provider.get().create(subMapper);
+        ComponentConfiguration subConfig = config.getChild(propertyName);
+        if (subConfig != null) {
+            Object subObject = provider.get().create(subConfig);
             method.invoke(obj, subObject);
         }
         return true;

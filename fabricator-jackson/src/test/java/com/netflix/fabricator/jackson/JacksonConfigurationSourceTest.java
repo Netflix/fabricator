@@ -9,7 +9,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.netflix.fabricator.jackson.JacksonConfigurationSource;
+import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 
 public class JacksonConfigurationSourceTest {
 
@@ -33,7 +33,7 @@ public class JacksonConfigurationSourceTest {
         prop1.setProperty("b", "_b");
         prop1.setProperty("c", "_c");
         
-        JacksonConfigurationSource source = new JacksonConfigurationSource("key1", "type1", node);
+        JacksonComponentConfiguration source = new JacksonComponentConfiguration("key1", "type1", node);
         Properties prop2 = source.getValue("properties", Properties.class);
         Assert.assertEquals(prop1, prop2);
         System.out.println(prop1);

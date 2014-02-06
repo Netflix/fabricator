@@ -21,7 +21,7 @@ public interface ComponentConfiguration {
      * 
      * @return
      */
-    public String getKey();
+    public String getId();
     
     /**
      * Get the component type.  When using MapBinder to provide different implementations
@@ -70,10 +70,10 @@ public interface ComponentConfiguration {
     public Set<String> getUnknownProperties(Set<String> supportedProperties);
     
     /**
-     * Return a Mapper that a sub-context of the underlying configuration.  
+     * Return a ConfigurationSource that a sub-context of the underlying configuration.  
      * For example,
      * 
-     * getSubMapper("policy") on the following JSON will return the node rooted at "policy"
+     * getChild("policy") on the following JSON will return the node rooted at "policy"
      * 
      *      {
      *          "prop1" : "abc",

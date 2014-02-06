@@ -22,8 +22,8 @@ public class CompositeExistingBinding implements BindingReslove {
 
     @Override
     public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
-        ComponentConfiguration subMapper = config.getChild(propertyName);
-        if (subMapper == null)
+        ComponentConfiguration subConfig = config.getChild(propertyName);
+        if (subConfig == null)
             return false;
         ParameterizedType subType = Types.newParameterizedType(ComponentFactory.class, argType);
         Key<ComponentFactory<?>> subKey = (Key<ComponentFactory<?>>) Key.get(subType);
@@ -31,7 +31,7 @@ public class CompositeExistingBinding implements BindingReslove {
         if (binding != null) {
             ComponentFactory<?> factory = injector.getInstance(subKey);
             if (factory != null) {
-                Object subObject = factory.create(subMapper);
+                Object subObject = factory.create(subConfig);
                 method.invoke(obj, subObject);
                 return true;
             }

@@ -22,8 +22,8 @@ public class StringBinderFactory implements PropertyBinderFactory {
         }
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ComponentConfiguration mapper) throws Exception {
-                    Object value = mapper.getValue(propertyName, String.class);
+                public boolean bind(Object obj, ComponentConfiguration config) throws Exception {
+                    Object value = config.getValue(propertyName, String.class);
                     if (value != null) {
                         method.invoke(obj, value);
                         return true;

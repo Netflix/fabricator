@@ -23,7 +23,7 @@ public class CompositeInterfaceBinding implements BindingReslove {
 
     @Override
     public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
-        ComponentConfiguration subMapper = config.getChild(propertyName);
+        ComponentConfiguration subConfig = config.getChild(propertyName);
         if (argType.isInterface()) {
             TypeLiteral<Map<String, ComponentFactory<?>>> mapType =
                     (TypeLiteral<Map<String, ComponentFactory<?>>>) TypeLiteral.get(
@@ -37,14 +37,14 @@ public class CompositeInterfaceBinding implements BindingReslove {
             Binding<Map<String, ComponentFactory<?>>> binding = injector.getExistingBinding(mapKey);
             
             if (binding != null) {
-                if (subMapper.getType() != null) {
+                if (subConfig.getType() != null) {
                     Map<String, ComponentFactory<?>> map = binding
                             .getProvider().get();
                     ComponentFactory<?> factory = map
-                            .get(subMapper.getType());
+                            .get(subConfig.getType());
                     if (factory != null) {
                         Object subObject = factory
-                                .create(subMapper);
+                                .create(subConfig);
                         method.invoke(obj, subObject);
                         return true;
                     }

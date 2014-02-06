@@ -26,8 +26,8 @@ public class IntegerBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ComponentConfiguration mapper) throws Exception {
-                    Object value = mapper.getValue(propertyName, Integer.class);
+                public boolean bind(Object obj, ComponentConfiguration config) throws Exception {
+                    Object value = config.getValue(propertyName, Integer.class);
                     if (value != null) {
                         method.invoke(obj, value);
                         return true;

@@ -32,7 +32,7 @@ public abstract class AbstractPropertiesComponentConfiguration implements Compon
     }
     
     @Override
-    public String getKey() {
+    public String getId() {
         return id;
     }
 

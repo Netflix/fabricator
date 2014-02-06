@@ -11,11 +11,11 @@ import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.fabricator.ComponentConfiguration;
-import com.netflix.fabricator.jackson.JacksonConfigurationSource;
+import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
-public class JacksonConfigurationSource implements ComponentConfiguration {
-    private static Logger LOG = LoggerFactory.getLogger(JacksonConfigurationSource.class);
+public class JacksonComponentConfiguration implements ComponentConfiguration {
+    private static Logger LOG = LoggerFactory.getLogger(JacksonComponentConfiguration.class);
     
     public static abstract class StaticListenableSupplier<T> implements ListenableSupplier<T> {
         StaticListenableSupplier() {
@@ -27,20 +27,20 @@ public class JacksonConfigurationSource implements ComponentConfiguration {
         }
     }
     
-    private final String key;
+    private final String id;
     private final String type;
     private final JsonNode node;
     
-    public JacksonConfigurationSource(String key, String type, JsonNode node) {
+    public JacksonComponentConfiguration(String id, String type, JsonNode node) {
         super();
-        this.key = key;
+        this.id = id;
         this.type = type;
         this.node = node;
     }
 
     @Override
-    public String getKey() {
-        return key;
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class JacksonConfigurationSource implements ComponentConfiguration {
 
     @Override
     public ComponentConfiguration getChild(String name) {
-        return new JacksonConfigurationSource(null, null, node.get(name));
+        return new JacksonComponentConfiguration(null, null, node.get(name));
     }
 
     @Override

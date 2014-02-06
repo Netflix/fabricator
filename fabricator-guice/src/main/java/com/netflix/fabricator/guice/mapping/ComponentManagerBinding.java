@@ -33,8 +33,9 @@ public class ComponentManagerBinding implements BindingReslove {
             catch (Exception e) {
                 throw new Exception(String.format(
                         "Unable to get component '%s' (%s) for property '%s' must be one of %s",
-                        name, argType.getSimpleName(), propertyName, manager.keys()), e);
+                        name, argType.getSimpleName(), propertyName, manager.getIds()), e);
             }
         }
-        return false;    }
+        return false;    
+    }
 }

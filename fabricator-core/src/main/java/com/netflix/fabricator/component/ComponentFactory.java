@@ -17,13 +17,13 @@ import com.netflix.fabricator.component.exception.ComponentCreationException;
  */
 public interface ComponentFactory<T> {
     /**
-     * Create an instance of the component using the provided mapper
-     * @param mapper
+     * Create an instance of the component using the provided config
+     * @param config
      * @return
      * @throws ComponentCreationException 
      * @throws ComponentAlreadyExistsException
      */
-    T create(ComponentConfiguration mapper) throws ComponentAlreadyExistsException, ComponentCreationException;
+    T create(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * Return configuration properties of T

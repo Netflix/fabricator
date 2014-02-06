@@ -69,7 +69,7 @@ public class BindingComponentFactory<T>  {
             if (Builder.class.isAssignableFrom(clazz)) {
                 this.builderClass = clazz;
                 this.instantiator = new Instantiator() {
-                    public Object create(@Nullable ComponentConfiguration mapper) {
+                    public Object create(@Nullable ComponentConfiguration config) {
                         return (Builder<?>) injector.getInstance(clazz);
                     }
                 };
@@ -80,7 +80,7 @@ public class BindingComponentFactory<T>  {
                 final Method method = clazz.getMethod(BUILDER_METHOD_NAME);
                 this.builderClass = method.invoke(null, (Object[])null).getClass();
                 this.instantiator = new Instantiator() {
-                    public Object create(ComponentConfiguration mapper) throws Exception {
+                    public Object create(ComponentConfiguration config) throws Exception {
                         return method.invoke(null, (Object[])null);
                     }
                 };
@@ -92,7 +92,7 @@ public class BindingComponentFactory<T>  {
                 if (inner.getSimpleName().equals("Builder")) {
                     this.builderClass = inner;
                     this.instantiator = new Instantiator() {
-                        public Object create(ComponentConfiguration mapper) {
+                        public Object create(ComponentConfiguration config) {
                             return injector.getInstance(inner);
                         }
                     };
@@ -107,18 +107,18 @@ public class BindingComponentFactory<T>  {
         this.factory = new ComponentFactory<T>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T create(ComponentConfiguration mapper) {
+            public T create(ComponentConfiguration config) {
                 try {
                     // 1. Create an instance of the builder.  This still will also do basic
                     //    dependency injection using @Inject.  Named injections will be handled
                     //    by the configuration mapping phase
-                    Object builder = instantiator.create(mapper);
+                    Object builder = instantiator.create(config);
 
                     // 2. Set the 'id'
-                    mapId(builder, mapper);
+                    mapId(builder, config);
 
                     // 3. Apply configuration
-                    mapConfiguration(builder, mapper);
+                    mapConfiguration(builder, config);
                     
                     // 4. call build()
                     Method buildMethod = builder.getClass().getMethod(BUILD_METHOD_NAME);
@@ -140,8 +140,8 @@ public class BindingComponentFactory<T>  {
         };
     }
 
-    private void mapId(Object builder, ComponentConfiguration mapper) throws Exception {
-        if (mapper.getKey() != null) {
+    private void mapId(Object builder, ComponentConfiguration config) throws Exception {
+        if (config.getId() != null) {
             Method idMethod = null;
             try {
                 idMethod = builder.getClass().getMethod(WITH_METHOD_PREFIX + ID_METHOD_SUFFIX, String.class);
@@ -156,7 +156,7 @@ public class BindingComponentFactory<T>  {
                 }
             }
             if (idMethod != null) {
-                idMethod.invoke(builder, mapper.getKey());
+                idMethod.invoke(builder, config.getId());
             } else {
                 LOG.trace("cannot find id method");
             }
@@ -165,17 +165,17 @@ public class BindingComponentFactory<T>  {
     
     /**
      * Perform the actual configuration mapping by iterating through all parameters
-     * and applying the mapper.
+     * and applying the config.
      * 
      * @param obj
-     * @param mapper
+     * @param config
      * @throws Exception
      */
-    private void mapConfiguration(Object obj, ComponentConfiguration mapper) throws Exception {
+    private void mapConfiguration(Object obj, ComponentConfiguration config) throws Exception {
         for (Entry<String, PropertyInfo> prop : properties.entrySet()) {
-            LOG.trace("Mapping property : " + prop.getKey() + " to " + mapper.getValue(prop.getKey(), String.class));
+            LOG.trace("Mapping property : " + prop.getKey() + " to " + config.getValue(prop.getKey(), String.class));
             try {
-                prop.getValue().apply(obj, mapper);
+                prop.getValue().apply(obj, config);
             }
             catch (Exception e) {
                 throw new Exception("Failed to map property: " + prop.getKey(), e);
