@@ -37,19 +37,21 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     private final ConcurrentMap<String, T>         components = Maps.newConcurrentMap();
     private final Map<String, ComponentFactory<T>> factories;
     private final ComponentConfigurationResolver   configResolver;
+    private final ComponentType<T>                 componentType;
     
     @Inject
     public SynchronizedComponentManager(
             ComponentType<T>                 type,
             Map<String, ComponentFactory<T>> factories, 
-            TypeConfigurationResolver         config) {
+            TypeConfigurationResolver        config) {
         this.factories      = factories;
+        this.componentType  = type;
         this.configResolver = config.getConfigurationFactory(type.getType());
     }
     
     @Override
     public T get(String id) throws ComponentCreationException, ComponentAlreadyExistsException {
-        Preconditions.checkNotNull(id, "Component must have a id");
+        Preconditions.checkNotNull(id, String.format("Component of type '%s' must have a id", componentType.getType()));
         T component = components.get(id);
         if (component == null) {
             synchronized (this) {
@@ -59,13 +61,13 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
                     if (config != null) {
                         component = getComponentFactory(config.getType()).create(config);
                         if (component == null) {
-                            throw new ComponentCreationException("Error creating component");
+                            throw new ComponentCreationException(String.format("Error creating component of type '%s' with id '%s'", componentType.getType(), id));
                         }
         
                         components.put(id, component);
                     }
                     else {
-                        throw new ComponentCreationException("No config provided");
+                        throw new ComponentCreationException(String.format("No config provided for component of type '%s' with id '%s'", componentType.getType(), id));
                     }
                 }
             }
@@ -98,7 +100,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         
         T component = getComponentFactory(config.getType()).create(config);
         if (component == null) {
-            throw new ComponentCreationException(String.format("Error creating component '%s'", config.getId()));
+            throw new ComponentCreationException(String.format("Error creating component type '%s' with id '%s'", componentType.getType(), config.getId()));
         }
         
         components.put(config.getId(), component);
