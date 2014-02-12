@@ -22,7 +22,6 @@ import com.google.inject.spi.Toolable;
 import com.netflix.fabricator.guice.mapping.ComponentManagerBinding;
 import com.netflix.fabricator.guice.mapping.CompositeExistingBinding;
 import com.netflix.fabricator.guice.mapping.CompositeInterfaceBinding;
-import com.netflix.fabricator.guice.mapping.CompositeNoExistingBinding;
 import com.netflix.fabricator.guice.mapping.CompositePropertyInjection;
 import com.netflix.fabricator.guice.mapping.MapBinderBinding;
 import com.netflix.fabricator.guice.mapping.NamedInjectionBinding;

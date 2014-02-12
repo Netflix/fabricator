@@ -26,7 +26,8 @@ public class SimplePropertyBinderFactoryResolver implements PropertyBinderResolv
             DoubleBinderFactory.get(),
             BooleanBinderFactory.get(),
             IntegerBinderFactory.get(),
-            EnumBinderFactory.get()
+            EnumBinderFactory.get(),
+            ClassBinderFactory.get()
             );
     
     private final List<PropertyBinderFactory> propertyBinders;
@@ -67,7 +68,7 @@ public class SimplePropertyBinderFactoryResolver implements PropertyBinderResolv
         for (PropertyBinderFactory factory : propertyBinders) {
             PropertyBinder binder = factory.createBinder(method, propertyName);
             if (binder != null) {
-                LOG.info("Found binder for " + method.getName() + " " + argType);
+                LOG.trace("Found binder for " + method.getName() + " " + argType);
                 return binder;
             }
         }

@@ -239,7 +239,7 @@ public class BindingComponentFactory<T>  {
                 prop.addBinding(binding);
                 properties.put(propertyName, prop);
                 
-                LOG.trace("Adding binding for : " + propertyName + " to " + binding.getClass());
+                LOG.info("Adding binding for : " + propertyName + " to " + binding.getClass());
             }
         }
         
