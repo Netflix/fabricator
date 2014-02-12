@@ -17,6 +17,7 @@ import com.netflix.fabricator.ComponentType;
 import com.netflix.fabricator.ComponentConfigurationResolver;
 import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.TypeConfigurationResolver;
+import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 
@@ -32,12 +33,14 @@ import com.netflix.fabricator.component.exception.ComponentCreationException;
 public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     private Logger LOG = LoggerFactory.getLogger(SynchronizedComponentManager.class);
     
-    private static final String DEFAULT_FACTORY = "default";
-   
     private final ConcurrentMap<String, T>         components = Maps.newConcurrentMap();
     private final Map<String, ComponentFactory<T>> factories;
     private final ComponentConfigurationResolver   configResolver;
     private final ComponentType<T>                 componentType;
+    
+    @Default
+    @Inject(optional=true)
+    private ComponentFactory<T> defaultComponentFactory = null;
     
     @Inject
     public SynchronizedComponentManager(
@@ -91,6 +94,12 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     
     @Override
     public synchronized T get(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException {
+        return load(config);
+    }
+
+    
+    @Override
+    public T load(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException {
         Preconditions.checkNotNull(config,         "Configuration cannot be null");
         Preconditions.checkNotNull(config.getId(), "Configuration must have an id");
         
@@ -168,7 +177,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             factory = factories.get(type);
         }
         if (factory == null) {
-            factory = factories.get(DEFAULT_FACTORY);
+            factory = defaultComponentFactory; //factories.get(DEFAULT_FACTORY);
         }
         if (factory == null) {
             throw new ComponentCreationException(

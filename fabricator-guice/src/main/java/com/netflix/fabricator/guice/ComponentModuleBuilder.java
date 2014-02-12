@@ -1,5 +1,6 @@
 package com.netflix.fabricator.guice;
 
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.google.inject.name.Names;
 import com.google.inject.util.Types;
 import com.netflix.fabricator.Builder;
 import com.netflix.fabricator.ComponentType;
+import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
 import com.netflix.fabricator.component.ComponentFactory;
@@ -35,23 +37,38 @@ public class ComponentModuleBuilder<T> {
     private Set<String> ids = Sets.newHashSet();
     private Map<String, T> instances = Maps.newHashMap();
     private Class<? extends ComponentManager> managerClass;
+    private String typeName;
     
     public Module build(final Class<T> type) {
         return new AbstractModule() {
             @Override 
             protected void configure() {
+                TypeLiteral componentFactoryTypeLiteral = TypeLiteral.get(Types.newParameterizedType(ComponentFactory.class, type));
+
                 if (managerClass != null) {
-                    Type typeAnnot = type.getAnnotation(Type.class);
-                    Preconditions.checkNotNull(typeAnnot, "Missing @Type annotation for " + type.getCanonicalName());
                     TypeLiteral<ComponentType<T>> componentType = (TypeLiteral<ComponentType<T>>) TypeLiteral.get(Types.newParameterizedType(ComponentType.class, type));
-                    bind(componentType)
-                        .toInstance(new ComponentType<T>(typeAnnot.value()));
+                    if (typeName == null) {
+                        Type typeAnnot = type.getAnnotation(Type.class);
+                        Preconditions.checkNotNull(typeAnnot, "Missing @Type annotation for " + type.getCanonicalName());
+                        bind(componentType)
+                            .toInstance(new ComponentType<T>(typeAnnot.value()));
+                    }
+                    else {
+                        bind(componentType)
+                            .toInstance(new ComponentType<T>(typeName));
+                    }
                     
                     TypeLiteral<ComponentManager<T>> managerType     = (TypeLiteral<ComponentManager<T>>) TypeLiteral.get(Types.newParameterizedType(ComponentManager.class, type));
                     TypeLiteral<ComponentManager<T>> managerTypeImpl = (TypeLiteral<ComponentManager<T>>) TypeLiteral.get(Types.newParameterizedType(managerClass, type));
                     bind(managerType)
                         .to(managerTypeImpl)
                         .in(Scopes.SINGLETON);
+                    
+                    if (!Modifier.isAbstract(type.getModifiers() )) {
+                        bind(componentFactoryTypeLiteral)
+                            .annotatedWith(Default.class)
+                            .toProvider(new GuiceBindingComponentFactoryProvider<T>((Class<T>) type));
+                    }
                 }
 
                 
@@ -59,7 +76,7 @@ public class ComponentModuleBuilder<T> {
                 MapBinder<String, ComponentFactory<T>> factories = (MapBinder<String, ComponentFactory<T>>) MapBinder.newMapBinder(
                         binder(), 
                         TypeLiteral.get(String.class), 
-                        TypeLiteral.get(Types.newParameterizedType(ComponentFactory.class, type))
+                        componentFactoryTypeLiteral
                     );
 
                 // Add different sub types to the multi binder
@@ -109,6 +126,11 @@ public class ComponentModuleBuilder<T> {
         return this;
     }
 
+    public ComponentModuleBuilder<T> typename(String typeName) {
+        this.typeName = typeName;
+        return this;
+    }
+    
     public ComponentModuleBuilder<T> manager(Class<? extends ComponentManager> clazz) {
         managerClass = clazz;
         return this;

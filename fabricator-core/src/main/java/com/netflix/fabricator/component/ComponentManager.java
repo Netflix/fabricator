@@ -49,8 +49,11 @@ public interface ComponentManager<T> {
      * @throws ComponentAlreadyExistsException 
      * @throws ComponentCreationException 
      */
-    public T get(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public T load(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
     
+    @Deprecated
+    public T get(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
+
     /**
      * Add an externally created entity with the specified id.  Will throw
      * an exception if the id is already registered.
