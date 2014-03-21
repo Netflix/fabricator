@@ -1,17 +1,22 @@
 package com.netflix.fabricator.archaius;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.ComponentConfigurationResolver;
 import com.netflix.fabricator.TypeConfigurationResolver;
+import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 
 /**
  * Main configuration access using Archaius as the configuration source.
@@ -35,30 +40,51 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
     private static String DEFAULT_FORMAT_STRING = "%s.%s";
     private static String TYPE_FIELD = "type";
     
+    // TODO: Inject this
     private AbstractConfiguration config = ConfigurationManager.getConfigInstance();
     
     private final Map<String, ComponentConfigurationResolver> overrides;
     
+    private final ObjectMapper mapper = new ObjectMapper();
+    
     @Inject
     public ArchaiusTypeConfigurationResolver(Map<String, ComponentConfigurationResolver> overrides) {
-        this.overrides = overrides;
+        if (overrides == null) {
+            this.overrides = Maps.newHashMap();
+        }
+        else {
+            this.overrides = overrides;
+        }
     }
     
     @Override
-    public ComponentConfigurationResolver getConfigurationFactory(final String type) {
-        ComponentConfigurationResolver factory = overrides.get(type);
+    public ComponentConfigurationResolver getConfigurationFactory(final String componentType) {
+        ComponentConfigurationResolver factory = overrides.get(componentType);
         if (factory != null)
             return factory;
         
         return new ComponentConfigurationResolver() {
             @Override
             public ComponentConfiguration getConfiguration(final String key) {
-                String prefix    = String.format(DEFAULT_FORMAT_STRING, key, type);
+                String prefix    = String.format(DEFAULT_FORMAT_STRING, key, componentType);
+                
+                if (config.containsKey(prefix)) {
+                    String json = config.getString(prefix).trim();
+                    
+                    if (!json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
+                        try {
+                            return new JacksonComponentConfiguration(key, componentType, mapper.readTree(json));
+                        } catch (Exception e) {
+                            throw new RuntimeException(String.format("Unable to parse json from '%s'", prefix));
+                        }
+                    }
+                }
+
                 String typeField = Joiner.on(".").join(prefix, TYPE_FIELD);
                 String typeValue = config.getString(typeField);
                 
-                if (type == null) {
-                    throw new RuntimeException(String.format("Type for '%s' not specified '%s'", typeField, type));
+                if (componentType == null) {
+                    throw new RuntimeException(String.format("Type for '%s' not specified '%s'", typeField, componentType));
                 }
                 
                 return new ArchaiusComponentConfiguration(
@@ -66,6 +92,26 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
                         typeValue,
                         config,
                         prefix);
+            }
+
+            @Override
+            public Map<String, ComponentConfiguration> getAllConfigurations() {
+                Map<String, ComponentConfiguration> configs = Maps.newHashMap();
+                Iterator<String> keys = config.getKeys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    String[] parts = StringUtils.split(key, ".");
+                    if (parts.length > 1) {
+                        String type = parts[1];
+                        if (type.equals(componentType)) {
+                            String id = parts[0];
+                            if (!configs.containsKey(id)) {
+                                configs.put(id, getConfiguration(id));
+                            }
+                        }
+                    }
+                }
+                return configs;
             }
         };
     }

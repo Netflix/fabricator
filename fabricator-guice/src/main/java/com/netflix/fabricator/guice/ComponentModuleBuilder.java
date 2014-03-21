@@ -23,7 +23,7 @@ import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
 import com.netflix.fabricator.component.ComponentFactory;
 import com.netflix.fabricator.component.ComponentManager;
-
+import com.netflix.governator.guice.lazy.LazySingletonScope;
 /**
  * Utility class for creating a binding between a type string name and an
  * implementation using the builder pattern.
@@ -62,12 +62,13 @@ public class ComponentModuleBuilder<T> {
                     TypeLiteral<ComponentManager<T>> managerTypeImpl = (TypeLiteral<ComponentManager<T>>) TypeLiteral.get(Types.newParameterizedType(managerClass, type));
                     bind(managerType)
                         .to(managerTypeImpl)
-                        .in(Scopes.SINGLETON);
+                        .in(LazySingletonScope.get());
                     
                     if (!Modifier.isAbstract(type.getModifiers() )) {
                         bind(componentFactoryTypeLiteral)
                             .annotatedWith(Default.class)
-                            .toProvider(new GuiceBindingComponentFactoryProvider<T>((Class<T>) type));
+                            .toProvider(new GuiceBindingComponentFactoryProvider<T>((Class<T>) type))
+                            .in(LazySingletonScope.get());
                     }
                 }
 

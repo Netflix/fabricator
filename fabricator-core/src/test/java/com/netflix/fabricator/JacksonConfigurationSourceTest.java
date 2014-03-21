@@ -1,32 +1,30 @@
-package com.netflix.fabricator.jackson;
+package com.netflix.fabricator;
 
 import java.util.Properties;
 
-import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.inject.Guice;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
+import com.netflix.governator.lifecycle.LifecycleManager;
 
 public class JacksonConfigurationSourceTest {
+    private static String json = 
+            "{\"properties\":{"
+           + "   \"a\":\"_a\"," 
+           + "   \"b\":\"_b\"," 
+           + "   \"c\":\"_c\"" 
+           + "}"
+           + "}";
+    
 
     @Test
     public void test() throws Exception {
-        String text = 
-                "{\"properties\":{"
-               + "   \"a\":\"_a\"," 
-               + "   \"b\":\"_b\"," 
-               + "   \"c\":\"_c\"" 
-               + "}"
-               + "}";
-        
         ObjectMapper mapper = new ObjectMapper();
-        JsonFactory factory = mapper.getJsonFactory(); // since 2.1 use mapper.getFactory() instead
-        JsonParser jp = factory.createJsonParser(text);
-        JsonNode node = mapper.readTree(jp);
+        JsonNode node = mapper.readTree(json);
 
         Properties prop1 = new Properties();
         prop1.setProperty("a", "_a");
@@ -38,5 +36,4 @@ public class JacksonConfigurationSourceTest {
         Assert.assertEquals(prop1, prop2);
         System.out.println(prop1);
     }
-
 }

@@ -647,6 +647,50 @@ public class ComponentFactoryModuleBuilderTest {
     }
 
     @Test
+    public void testJsonPropertyValue() throws Exception {
+        Injector injector = Guice.createInjector(
+                new PropertiesConfigurationModule(new Properties()),
+                new SomeInterfaceModule(),
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        install(new ComponentModuleBuilder<SomeInterface>()
+                                .implementation(BaseA.class)
+                                .build(SomeInterface.class)
+                                );
+                    }
+                },
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(MyService.class);
+                    }
+                }
+            );
+            
+            ComponentManager<SomeInterface> ifmanager = injector.getInstance(Key.get(new TypeLiteral<ComponentManager<SomeInterface>>() {}));
+            
+            // 1.  Bootstrap on startup
+            // 2.  Load by 'id'
+            // 3.  Map with prefix
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode node = mapper.createObjectNode();
+            node.put("type",   "a");
+            node.put("prop1",  "v1");
+            node.put("prop2",  "v2");
+            node.put("dyn1",   "dyn1_value");
+            node.put("dyn2",   "dyn2_value");
+            String jsonString = mapper.writeValueAsString(node);
+            ConfigurationManager.getConfigInstance().setProperty("id1.some", "dyn1_value_new");
+            
+            SomeInterface if1 = ifmanager.get("id1");
+            LOG.info(if1.toString());
+            
+            
+            LOG.info(if1.toString());
+    }
+    
+    @Test
     @Ignore
     public void testJson() throws Exception {
         Injector injector = Guice.createInjector(
