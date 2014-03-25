@@ -130,4 +130,9 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
     public <T> T getInstance(Class<T> clazz) {
         return injector.getInstance(clazz);
     }
+
+    @Override
+    public void injectMembers(Object obj) {
+        injector.injectMembers(obj);
+    }
 }

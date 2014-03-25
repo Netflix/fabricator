@@ -81,7 +81,9 @@ public class BindingComponentFactory<T>  {
                 this.builderClass = method.invoke(null, (Object[])null).getClass();
                 this.instantiator = new Instantiator() {
                     public Object create(ComponentConfiguration config) throws Exception {
-                        return method.invoke(null, (Object[])null);
+                        Object obj = method.invoke(null, (Object[])null);
+                        injector.injectMembers(obj);
+                        return obj;
                     }
                 };
             }

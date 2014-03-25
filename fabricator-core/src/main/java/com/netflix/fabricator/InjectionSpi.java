@@ -20,4 +20,6 @@ public interface InjectionSpi {
             String      propertyName,
             Class<?>    argType, 
             Method      method);
+    
+    public void injectMembers(Object obj);
 }

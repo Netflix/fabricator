@@ -73,12 +73,18 @@ public interface ComponentManager<T> {
     public void replace(String id, T component) throws ComponentAlreadyExistsException;
     
     /**
-     * Replace all components with the components defined by this list of config
-     * @param configs
-     * @throws ComponentAlreadyExistsException 
-     * @throws ComponentCreationException 
+     * Load a component and replace the component specified by config.getId()
+     * 
+     * @param config
+     * @throws ComponentCreationException
      */
-    public void replaceAll(List<ComponentConfiguration> configs) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public T replace(ComponentConfiguration config) throws ComponentCreationException;
+    
+    /**
+     * Apply the following function under a lock
+     * @param run
+     */
+    public void apply(Runnable run);
     
     /**
      * @return Return a collection of all component ids

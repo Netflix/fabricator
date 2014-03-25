@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.common.base.Joiner;
@@ -73,9 +74,10 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
                     
                     if (!json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
                         try {
-                            return new JacksonComponentConfiguration(key, componentType, mapper.readTree(json));
+                            JsonNode node = mapper.readTree(json);
+                            return new JacksonComponentConfiguration(key, node.get(TYPE_FIELD).getTextValue(), node);
                         } catch (Exception e) {
-                            throw new RuntimeException(String.format("Unable to parse json from '%s'", prefix));
+                            throw new RuntimeException(String.format("Unable to parse json from '%s'. (%s)", prefix, StringUtils.abbreviate(json, 256)));
                         }
                     }
                 }
