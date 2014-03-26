@@ -1,8 +1,10 @@
 package com.netflix.fabricator.archaius;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.configuration.ConfigurationConverter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,12 +16,17 @@ public class ArchaiusTypeConfigurationResolverTest {
     public void testReadAll() {
         Properties properties = new Properties();
         properties.put("id1.sometype.a", "_a1");
-        properties.put("id2.sometype", "{\"a\":\"_a2\"}");
-        properties.put("id3.sometype", "{\"a\":\"_a3\"}");
+        properties.put("id2.sometype", "{\"type\":\"_type\",\"a\":\"_a2\"}");
+        properties.put("id3.sometype", "{\"type\":\"_type\",\"a\":\"_a3\"}");
         
+        System.out.println(properties);
         properties.put("id1.someothertype.a", "_a");
         
         ConfigurationManager.loadProperties(properties);
+        
+        for (Entry<Object, Object> prop : ConfigurationConverter.getProperties(ConfigurationManager.getConfigInstance()).entrySet()) {
+            System.out.println(prop.getKey() + " : " + prop.getValue());
+        }
         
         ArchaiusTypeConfigurationResolver resolver = new ArchaiusTypeConfigurationResolver(null);
         Map<String, ComponentConfiguration> someTypeConfigs = resolver.getConfigurationFactory("sometype").getAllConfigurations();

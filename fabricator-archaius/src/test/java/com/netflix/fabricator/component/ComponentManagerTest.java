@@ -384,6 +384,10 @@ public class ComponentManagerTest {
             private Properties p;
             private String id;
 
+            public Builder() {
+                
+            }
+            
             public Builder withId(String id) {
                 this.id = id;
                 return this;
@@ -549,6 +553,8 @@ public class ComponentManagerTest {
         props.put("id1.some.boolean",       "true");
         props.put("id1.some.integer",       "2");
         props.put("id1.some.double",        "2.1");
+        props.put("id1.some.properties.a",  "_a");
+        props.put("id1.some.properties.b",  "_b");
 
         props.put("id2.some.type",          "c");
         props.put("id2.some.subEntity.str", "id2_subEntity_str");
@@ -595,9 +601,11 @@ public class ComponentManagerTest {
         );
 
         ComponentManager<SomeInterface> ifmanager = injector.getInstance(Key.get(new TypeLiteral<ComponentManager<SomeInterface>>() {}));
-        SomeInterface if1 = ifmanager.get("id1");
+        BaseD if1 = (BaseD)ifmanager.get("id1");
         logger.info("get id1 from manager: " + if1.toString());
         Assert.assertEquals(BaseD.class, if1.getClass());
+        Assert.assertNotNull(if1.getProperties());
+        Assert.assertEquals(2, if1.getProperties().size());
 
         SomeInterface if2 = ifmanager.get("id2");
         logger.info("get id2 from manager: " + if2.toString());

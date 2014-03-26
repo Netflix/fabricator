@@ -70,14 +70,19 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
                 String prefix    = String.format(DEFAULT_FORMAT_STRING, key, componentType);
                 
                 if (config.containsKey(prefix)) {
-                    String json = config.getString(prefix).trim();
-                    
+                    String json = config.getString(prefix);
                     if (!json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
                         try {
                             JsonNode node = mapper.readTree(json);
+                            if (node.get(TYPE_FIELD) == null)
+                                throw new Exception("Missing 'type' field");
                             return new JacksonComponentConfiguration(key, node.get(TYPE_FIELD).getTextValue(), node);
                         } catch (Exception e) {
-                            throw new RuntimeException(String.format("Unable to parse json from '%s'. (%s)", prefix, StringUtils.abbreviate(json, 256)));
+                            throw new RuntimeException(
+                                    String.format("Unable to parse json from '%s'. (%s)", 
+                                            prefix, 
+                                            StringUtils.abbreviate(json, 256)), 
+                                    e);
                         }
                     }
                 }
