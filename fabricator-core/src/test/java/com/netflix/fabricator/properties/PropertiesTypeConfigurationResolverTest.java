@@ -12,12 +12,11 @@ import com.netflix.fabricator.ComponentConfiguration;
 
 public class PropertiesTypeConfigurationResolverTest {
     @Test
-    @Ignore
     public void testReadAll() {
         Properties properties = new Properties();
         properties.put("id1.sometype.a", "_a1");
-        properties.put("id2.sometype", "{\"a\":\"_a2\"}");
-        properties.put("id3.sometype", "{\"a\":\"_a3\"}");
+        properties.put("id2.sometype", "{\"type\":\"_type\",\"a\":\"_a2\"}");
+        properties.put("id3.sometype", "{\"type\":\"_type\",\"a\":\"_a3\"}");
         
         properties.put("id1.someothertype.a", "_a");
         

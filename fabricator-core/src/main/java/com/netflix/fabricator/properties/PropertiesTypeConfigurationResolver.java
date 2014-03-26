@@ -67,7 +67,6 @@ public class PropertiesTypeConfigurationResolver implements TypeConfigurationRes
                 
                 if (properties.containsKey(prefix)) {
                     String json = properties.getProperty(prefix).trim();
-                    
                     if (!json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
                         try {
                             JsonNode node = mapper.readTree(json);

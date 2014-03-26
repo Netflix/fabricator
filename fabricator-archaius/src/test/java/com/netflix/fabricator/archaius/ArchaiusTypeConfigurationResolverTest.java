@@ -14,7 +14,6 @@ import com.netflix.fabricator.ComponentConfiguration;
 
 public class ArchaiusTypeConfigurationResolverTest {
     @Test
-    @Ignore
     public void testReadAll() {
         Properties properties = new Properties();
         properties.put("id1.sometype.a", "_a1");
