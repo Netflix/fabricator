@@ -25,10 +25,6 @@ public class ArchaiusTypeConfigurationResolverTest {
         
         ConfigurationManager.loadProperties(properties);
         
-        for (Entry<Object, Object> prop : ConfigurationConverter.getProperties(ConfigurationManager.getConfigInstance()).entrySet()) {
-            System.out.println(prop.getKey() + " : " + prop.getValue());
-        }
-        
         ArchaiusTypeConfigurationResolver resolver = new ArchaiusTypeConfigurationResolver(null);
         Map<String, ComponentConfiguration> someTypeConfigs = resolver.getConfigurationFactory("sometype").getAllConfigurations();
         Assert.assertEquals(3, someTypeConfigs.keySet().size());

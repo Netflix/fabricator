@@ -70,7 +70,7 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
                 String prefix    = String.format(DEFAULT_FORMAT_STRING, key, componentType);
                 
                 if (config.containsKey(prefix)) {
-                    String json = config.getProperty(prefix).toString().trim();
+                    String json = Joiner.on(config.getListDelimiter()).join(config.getStringArray(prefix)).trim();
                     if (!json.isEmpty() && json.startsWith("{") && json.endsWith("}")) {
                         try {
                             JsonNode node = mapper.readTree(json);
