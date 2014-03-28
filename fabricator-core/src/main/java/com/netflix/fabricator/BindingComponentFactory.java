@@ -240,8 +240,6 @@ public class BindingComponentFactory<T>  {
             if (binding != null) {
                 prop.addBinding(binding);
                 properties.put(propertyName, prop);
-                
-                LOG.info("Adding binding for : " + propertyName + " to " + binding.getClass());
             }
         }
         

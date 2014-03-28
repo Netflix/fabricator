@@ -116,12 +116,12 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
                     else {
                         // Hmmm...
                     }
+                    return false;
                 }
                 // Property is a structure
                 else {
                     return compositePropertyInjection.execute(null, obj, config);
                 }
-                return false;
             }
         };        
     }

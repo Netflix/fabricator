@@ -15,6 +15,7 @@ import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
 public class JacksonComponentConfiguration implements ComponentConfiguration {
+
     private static Logger LOG = LoggerFactory.getLogger(JacksonComponentConfiguration.class);
     
     public static abstract class StaticListenableSupplier<T> implements ListenableSupplier<T> {
@@ -163,6 +164,49 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
             LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), propertyName));
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "JacksonComponentConfiguration [id=" + id + ", type=" + type
+                + ", node=" + node + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((node == null) ? 0 : node.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        JacksonComponentConfiguration other = (JacksonComponentConfiguration) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (node == null) {
+            if (other.node != null)
+                return false;
+        } else if (!node.equals(other.node))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
     }
 
 }

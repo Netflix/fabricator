@@ -7,9 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.inject.Guice;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
-import com.netflix.governator.lifecycle.LifecycleManager;
 
 public class JacksonConfigurationSourceTest {
     private static String json = 
