@@ -1,7 +1,6 @@
 package com.netflix.fabricator.component;
 
 import java.util.Collection;
-import java.util.List;
 
 import rx.Observable;
 
@@ -60,8 +59,9 @@ public interface ComponentManager<T> {
      * @param id
      * @param component
      * @throws ComponentAlreadyExistsException 
+     * @throws ComponentCreationException 
      */
-    public void add(String id, T component) throws ComponentAlreadyExistsException;
+    public void add(String id, T component) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * Add an externally created entity with the specified id.  Will replace
@@ -69,8 +69,9 @@ public interface ComponentManager<T> {
      * @param id
      * @param component
      * @throws ComponentAlreadyExistsException 
+     * @throws ComponentCreationException 
      */
-    public void replace(String id, T component) throws ComponentAlreadyExistsException;
+    public void replace(String id, T component) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * Load a component and replace the component specified by config.getId()

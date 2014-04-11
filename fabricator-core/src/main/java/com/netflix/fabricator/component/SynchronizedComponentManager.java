@@ -1,9 +1,12 @@
 package com.netflix.fabricator.component;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.netflix.fabricator.ComponentType;
@@ -20,6 +25,7 @@ import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
+import com.netflix.governator.lifecycle.LifecycleMethods;
 
 /**
  * Implementation of a ComponentManager where each method is synchronized to guarantee
@@ -55,19 +61,23 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     @Override
     public T get(String id) throws ComponentCreationException, ComponentAlreadyExistsException {
         Preconditions.checkNotNull(id, String.format("Component of type '%s' must have a id", componentType.getType()));
+        // Look for an existing component
         T component = components.get(id);
         if (component == null) {
             synchronized (this) {
+                // Double check for existing component
                 component = components.get(id);
                 if (component == null) {
+                    // Get configuration context from default configuration
                     ComponentConfiguration config = configResolver.getConfiguration(id);
                     if (config != null) {
+                        // Create the object
                         component = getComponentFactory(config.getType()).create(config);
                         if (component == null) {
                             throw new ComponentCreationException(String.format("Error creating component of type '%s' with id '%s'", componentType.getType(), id));
                         }
         
-                        components.put(id, component);
+                        addComponent(id, component);
                     }
                     else {
                         throw new ComponentCreationException(String.format("No config provided for component of type '%s' with id '%s'", componentType.getType(), id));
@@ -77,19 +87,66 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         }
         return component;
     }
+    
+    private void addComponent(String id, T component) throws ComponentCreationException{
+        try {
+            invokePostConstruct(component);
+        } catch (Exception e) {
+            throw new ComponentCreationException("Error creating component : " + id);
+        }
+                
+        T oldComponent = components.put(id, component);
+        if (oldComponent == null) {
+            try {
+                invokePreDestroy(oldComponent);
+            } catch (Exception e) {
+                LOG.error("Error destroying component : " + id);
+            }
+        }
+    }
 
-    @Override
-    public synchronized void add(String id, T component) throws ComponentAlreadyExistsException {
-        Preconditions.checkNotNull(id,        "Component must have a id");
-        Preconditions.checkNotNull(component, "Component cannot be null");
-        if (null != components.putIfAbsent(id, component)) {
-            throw new ComponentAlreadyExistsException(id);
+    private void invokePostConstruct(T component) throws Exception {
+        if (component == null)
+            return;
+        LifecycleMethods methods = new LifecycleMethods(component.getClass());
+        Collection<Method> postConstruct = methods.methodsFor(PostConstruct.class);
+        if (!postConstruct.isEmpty()) {
+            Iterables.getFirst(postConstruct, null).invoke(component, null);
+        }
+    }
+
+    private void invokePreDestroy(T component) throws Exception {
+        if (component == null)
+            return;
+        LifecycleMethods methods = new LifecycleMethods(component.getClass());
+        Collection<Method> preDestroy = methods.methodsFor(PreDestroy.class);
+        if (!preDestroy.isEmpty()) {
+            Iterables.getFirst(preDestroy, null).invoke(component, null);
+        }
+    }
+
+    private void removeComponent(String id, T component) throws Exception {
+        if (component == null)
+            return;
+        if (components.get(id) == component) {
+            components.remove(id);
+            invokePreDestroy(component);
         }
     }
 
     @Override
+    public synchronized void add(String id, T component) throws ComponentAlreadyExistsException, ComponentCreationException {
+        Preconditions.checkNotNull(id,        "Component must have a id");
+        Preconditions.checkNotNull(component, "Component cannot be null");
+        if (components.containsKey(id)) {
+            throw new ComponentAlreadyExistsException(id);
+        }
+        addComponent(id, component);
+    }
+
+    @Override
     public synchronized Collection<String> getIds() {
-        return components.keySet();
+        return ImmutableSet.copyOf(components.keySet());
     }
     
     @Override
@@ -112,23 +169,28 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             throw new ComponentCreationException(String.format("Error creating component type '%s' with id '%s'", componentType.getType(), config.getId()));
         }
         
-        components.put(config.getId(), component);
+        addComponent(config.getId(), component);
         
         return component;
     }
 
     @Override
-    public synchronized void replace(String id, T component) throws ComponentAlreadyExistsException {
+    public synchronized void replace(String id, T component) throws ComponentAlreadyExistsException, ComponentCreationException {
         Preconditions.checkNotNull(id,       "Component must have a id");
         Preconditions.checkNotNull(component, "Component cannot be null");
-        components.put(id, component);
+        
+        addComponent(id, component);
     }
 
     @Override
     public synchronized void remove(String id) {
         Preconditions.checkNotNull(id,       "Component must have a id");
 
-        components.remove(id);
+        try {
+            removeComponent(id, components.get(id));
+        } catch (Exception e) {
+            LOG.error("Error shutting down component: " + id, e);
+        }
     }
     
     private ComponentFactory<T> getComponentFactory(String type) throws ComponentCreationException {
@@ -169,7 +231,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
                 throw new ComponentCreationException(String.format("Error creating component type '%s' with id '%s'", componentType.getType(), config.getId()));
             }
             
-            components.put(config.getId(), component);
+            addComponent(config.getId(), component);
             return component;
         } catch (ComponentAlreadyExistsException e) {
             // This can't really happen

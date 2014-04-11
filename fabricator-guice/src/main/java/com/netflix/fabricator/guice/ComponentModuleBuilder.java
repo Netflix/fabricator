@@ -116,7 +116,7 @@ public class ComponentModuleBuilder<T> {
 
     public ComponentModuleBuilder<T> implementation(Class<? extends T> type) {
         TypeImplementation subType = type.getAnnotation(TypeImplementation.class);
-        Preconditions.checkNotNull(subType);
+        Preconditions.checkNotNull(subType, "Missing @TypeImplementation for class " + type.getCanonicalName());
         bindings.put(subType.value(), new GuiceBindingComponentFactoryProvider<T>((Class<T>) type));
         return this;
     }
