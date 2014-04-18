@@ -152,6 +152,8 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
                 @Override
                 public Properties get() {
                     JsonNode child = node.get(propertyName);
+                    if (child == null)
+                    	return null;
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(child.getFieldNames())) {
                         result.setProperty(prop, child.get(prop).asText());
