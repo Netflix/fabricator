@@ -30,8 +30,7 @@ public class JacksonConfigurationSourceTest {
         prop1.setProperty("c", "_c");
         
         JacksonComponentConfiguration source = new JacksonComponentConfiguration("key1", "type1", node);
-        Properties prop2 = source.getValue("properties", Properties.class);
+        Properties prop2 = source.getChild("properties").getValue(Properties.class);
         Assert.assertEquals(prop1, prop2);
-        System.out.println(prop1);
     }
 }

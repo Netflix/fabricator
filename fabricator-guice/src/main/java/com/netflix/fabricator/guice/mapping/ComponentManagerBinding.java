@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.component.ComponentManager;
 
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ public class ComponentManagerBinding implements BindingReslove {
     }
 
     @Override
-    public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
+    public boolean execute(String name, Object obj, ConfigurationNode node, Class<?> argType, Injector injector, Method method) throws Exception {
         TypeLiteral<ComponentManager<?>> managerLiteral = (TypeLiteral<ComponentManager<?>>) TypeLiteral.get(Types.newParameterizedType(ComponentManager.class, argType));
         Binding<ComponentManager<?>> managerBinding = injector.getExistingBinding(Key.get(managerLiteral));
         if (managerBinding != null) {

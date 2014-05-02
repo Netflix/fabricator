@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
-public class JacksonComponentConfiguration implements ComponentConfiguration {
+public class JacksonComponentConfiguration implements ConfigurationNode {
 
     private static Logger LOG = LoggerFactory.getLogger(JacksonComponentConfiguration.class);
     
@@ -50,20 +50,17 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
     }
 
     @Override
-    public ComponentConfiguration getChild(String name) {
-        return new JacksonComponentConfiguration(null, null, node.get(name));
+    public ConfigurationNode getChild(String name) {
+        return new JacksonComponentConfiguration(name, null, node.get(name));
     }
 
     @Override
-    public boolean isSimpleProperty(String propertyName) {
-        JsonNode child = node.get(propertyName);
-        if (child == null)
-            return true;
-        return !child.isObject();
+    public boolean isSingle() {
+        return !node.isObject() && !node.isArray();
     }
 
     @Override
-    public boolean hasProperty(String propertyName) {
+    public boolean hasChild(String propertyName) {
         return node.get(propertyName) != null;
     }
 
@@ -73,8 +70,8 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
     }
 
     @Override
-    public <T> T getValue(String propertyName, Class<T> type) {
-        Supplier<T> supplier = this.getDynamicValue(propertyName, type);
+    public <T> T getValue(Class<T> type) {
+        Supplier<T> supplier = this.getDynamicValue(type);
         if (supplier != null)
             return supplier.get();
         return null;
@@ -82,90 +79,73 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> ListenableSupplier<T> getDynamicValue(final String propertyName, Class<T> type) {
-        if ( String.class.isAssignableFrom(type) ) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<String>() {
-                @Override
-                public String get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                        return null;
-                    return child.asText();
-                }
-
-            };
-        }
-        else if ( Boolean.class.isAssignableFrom(type) 
-                  || Boolean.TYPE.isAssignableFrom(type) 
-                  || boolean.class.equals(type)) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<Boolean>() {
-                @Override
-                public Boolean get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                        return null;
-                    return child.asBoolean();
-                }
-            };
-        }
-        else if ( Integer.class.isAssignableFrom(type) 
-                  || Integer.TYPE.isAssignableFrom(type)
-                  || int.class.equals(type)) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<Integer>() {
-                @Override
-                public Integer get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                        return null;
-                    return child.asInt();
-                }
-            };
-        }
-        else if ( Long.class.isAssignableFrom(type) 
-                  || Long.TYPE.isAssignableFrom(type)
-                  || long.class.equals(type)) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<Long>() {
-                @Override
-                public Long get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                        return null;
-                    return child.asLong();
-                }
-            };
-        }
-        else if ( Double.class.isAssignableFrom(type) 
-                  || Double.TYPE.isAssignableFrom(type) 
-                  || double.class.equals(type)) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<Double>() {
-                @Override
-                public Double get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                        return null;
-                    return child.asDouble();
-                }
-            };
-        }
-        else if ( Properties.class.isAssignableFrom(type)) {
-            return (ListenableSupplier<T>) new StaticListenableSupplier<Properties>() {
-                @Override
-                public Properties get() {
-                    JsonNode child = node.get(propertyName);
-                    if (child == null)
-                    	return null;
-                    Properties result = new Properties();
-                    for (String prop : Lists.newArrayList(child.getFieldNames())) {
-                        result.setProperty(prop, child.get(prop).asText());
+    public <T> ListenableSupplier<T> getDynamicValue(Class<T> type) {
+        if (node != null) {
+            if ( String.class.isAssignableFrom(type) ) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<String>() {
+                    @Override
+                    public String get() {
+                        return node.asText();
                     }
-                    return result;
-                }
-            };
+    
+                };
+            }
+            else if ( Boolean.class.isAssignableFrom(type) 
+                      || Boolean.TYPE.isAssignableFrom(type) 
+                      || boolean.class.equals(type)) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<Boolean>() {
+                    @Override
+                    public Boolean get() {
+                        return node.asBoolean();
+                    }
+                };
+            }
+            else if ( Integer.class.isAssignableFrom(type) 
+                      || Integer.TYPE.isAssignableFrom(type)
+                      || int.class.equals(type)) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<Integer>() {
+                    @Override
+                    public Integer get() {
+                        return node.asInt();
+                    }
+                };
+            }
+            else if ( Long.class.isAssignableFrom(type) 
+                      || Long.TYPE.isAssignableFrom(type)
+                      || long.class.equals(type)) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<Long>() {
+                    @Override
+                    public Long get() {
+                        return node.asLong();
+                    }
+                };
+            }
+            else if ( Double.class.isAssignableFrom(type) 
+                      || Double.TYPE.isAssignableFrom(type) 
+                      || double.class.equals(type)) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<Double>() {
+                    @Override
+                    public Double get() {
+                        return node.asDouble();
+                    }
+                };
+            }
+            else if ( Properties.class.isAssignableFrom(type)) {
+                return (ListenableSupplier<T>) new StaticListenableSupplier<Properties>() {
+                    @Override
+                    public Properties get() {
+                        Properties result = new Properties();
+                        for (String prop : Lists.newArrayList(node.getFieldNames())) {
+                            result.setProperty(prop, node.get(prop).asText());
+                        }
+                        return result;
+                    }
+                };
+            }
         }
-        else {
-            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), propertyName));
-            return null;
-        }
+        
+        LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), getId()));
+        return null;
     }
 
     @Override
@@ -210,5 +190,4 @@ public class JacksonComponentConfiguration implements ComponentConfiguration {
             return false;
         return true;
     }
-
 }

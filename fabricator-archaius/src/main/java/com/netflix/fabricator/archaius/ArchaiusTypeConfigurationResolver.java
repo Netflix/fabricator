@@ -14,7 +14,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.netflix.config.ConfigurationManager;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.ComponentConfigurationResolver;
 import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
@@ -66,7 +66,7 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
         
         return new ComponentConfigurationResolver() {
             @Override
-            public ComponentConfiguration getConfiguration(final String key) {
+            public ConfigurationNode getConfiguration(final String key) {
                 String prefix    = String.format(DEFAULT_FORMAT_STRING, key, componentType);
                 
                 if (config.containsKey(prefix)) {
@@ -102,8 +102,8 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
             }
 
             @Override
-            public Map<String, ComponentConfiguration> getAllConfigurations() {
-                Map<String, ComponentConfiguration> configs = Maps.newHashMap();
+            public Map<String, ConfigurationNode> getAllConfigurations() {
+                Map<String, ConfigurationNode> configs = Maps.newHashMap();
                 Iterator<String> keys = config.getKeys();
                 while (keys.hasNext()) {
                     String key = keys.next();

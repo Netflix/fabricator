@@ -10,5 +10,9 @@ public class ComponentType<T> {
     public String getType() {
         return type;
     }
+    
+    public static <T> ComponentType<T> from(String type) {
+    	return new ComponentType<T> (type);
+    }
 
 }

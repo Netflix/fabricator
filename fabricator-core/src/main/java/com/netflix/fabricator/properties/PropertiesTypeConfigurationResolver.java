@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.netflix.fabricator.ComponentConfigurationResolver;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 
@@ -62,7 +62,7 @@ public class PropertiesTypeConfigurationResolver implements TypeConfigurationRes
         
         return new ComponentConfigurationResolver() {
             @Override
-            public ComponentConfiguration getConfiguration(final String key) {
+            public ConfigurationNode getConfiguration(final String key) {
                 String prefix    = String.format(DEFAULT_FORMAT_STRING, key, componentType);
                 
                 if (properties.containsKey(prefix)) {
@@ -98,8 +98,8 @@ public class PropertiesTypeConfigurationResolver implements TypeConfigurationRes
             }
             
             @Override
-            public Map<String, ComponentConfiguration> getAllConfigurations() {
-                Map<String, ComponentConfiguration> configs = Maps.newHashMap();
+            public Map<String, ConfigurationNode> getAllConfigurations() {
+                Map<String, ConfigurationNode> configs = Maps.newHashMap();
                 for (Object key : properties.keySet()) {
                     String[] parts = StringUtils.split(key.toString(), ".");
                     if (parts.length > 1) {

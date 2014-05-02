@@ -3,8 +3,9 @@ package com.netflix.fabricator.properties;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Supplier;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.supplier.ListenableSupplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +18,8 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
 
     private final Properties props;
     
-    public PropertiesComponentConfiguration(String id, String type, Properties props, String prefix) {
-        super(id, type, prefix);
+    public PropertiesComponentConfiguration(String id, String type, Properties props, String fullName) {
+        super(id, type, fullName);
         this.props = props;
     }
 
@@ -39,13 +40,12 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
     
     @SuppressWarnings("unchecked")
     @Override
-    public <T> ListenableSupplier<T> getDynamicValue(final String key, Class<T> type) {
-        final String propertyName = getPrefix() + key;
+    public <T> ListenableSupplier<T> getDynamicValue(Class<T> type) {
         if ( String.class.isAssignableFrom(type) ) {
             return (ListenableSupplier<T>) new StaticListenableSupplier<String>() {
                 @Override
                 public String get() {
-                    final String value = props.getProperty(propertyName);
+                    final String value = props.getProperty(getFullName());
                     if (value == null)
                         return null;
                     return value;
@@ -59,7 +59,7 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             return (ListenableSupplier<T>) new StaticListenableSupplier<Boolean>() {
                 @Override
                 public Boolean get() {
-                    final String value = props.getProperty(propertyName);
+                    final String value = props.getProperty(getFullName());
                     if (value == null)
                         return null;
                     return Boolean.valueOf(value);
@@ -72,7 +72,7 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             return (ListenableSupplier<T>) new StaticListenableSupplier<Integer>() {
                 @Override
                 public Integer get() {
-                    final String value = props.getProperty(propertyName);
+                    final String value = props.getProperty(getFullName());
                     if (value == null)
                         return null;
                     return Integer.valueOf(value);
@@ -85,7 +85,7 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             return (ListenableSupplier<T>) new StaticListenableSupplier<Long>() {
                 @Override
                 public Long get() {
-                    final String value = props.getProperty(propertyName);
+                    final String value = props.getProperty(getFullName());
                     if (value == null)
                         return null;
                     return Long.valueOf(value);
@@ -98,7 +98,7 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             return (ListenableSupplier<T>) new StaticListenableSupplier<Double>() {
                 @Override
                 public Double get() {
-                    final String value = props.getProperty(propertyName);
+                    final String value = props.getProperty(getFullName());
                     if (value == null)
                         return null;
                     return Double.valueOf(value);
@@ -109,10 +109,10 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             return (ListenableSupplier<T>) new StaticListenableSupplier<Properties>() {
                 @Override
                 public Properties get() {
-                    if (props.containsKey(propertyName)) {
-                        throw new RuntimeException(propertyName + " is not a root for a properties structure");
+                    if (props.containsKey(getFullName())) {
+                        throw new RuntimeException(getFullName() + " is not a root for a properties structure");
                     }
-                    String prefix = propertyName + ".";
+                    String prefix = getFullName() + ".";
                     Properties result = new Properties();
                     for (String prop : props.stringPropertyNames()) {
                         if (prop.startsWith(prefix)) {
@@ -124,33 +124,29 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
             };
         }
         else {
-            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), propertyName));
+            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), getFullName()));
             return null;
         }
     }
 
     @Override
-    public ComponentConfiguration getChild(String name) {
-        String prefix = getPrefix() + name + ".";
-        
+    public ConfigurationNode getChild(String name) {
+        String fullName = Joiner.on(".").skipNulls().join(getFullName(), name);
         return new PropertiesComponentConfiguration(
-                null, 
-                props.getProperty(prefix + "type"),     // TODO: Make 'type' configurable
+                name, 
+                props.getProperty(Joiner.on(".").join(fullName, "type")),     // TODO: Make 'type' configurable
                 props, 
-                prefix);
+                fullName);
     }
 
     @Override
-    public boolean isSimpleProperty(String propertyName) {
-        if (null != props.getProperty(getPrefix() + propertyName)) {
-            return true;
-        }
-        return false;
+    public boolean isSingle() {
+        return props.containsKey(getFullName());
     }
 
     @Override
-    public boolean hasProperty(String propertyName) {
-        return props.containsKey(Joiner.on(".").skipNulls().join(getPrefix(), propertyName));
+    public boolean hasChild(String propertyName) {
+        return props.containsKey(Joiner.on(".").skipNulls().join(getFullName(), propertyName));
     }
 
     @Override
@@ -159,8 +155,8 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
     }
 
     @Override
-    public <T> T getValue(String propertyName, Class<T> type) {
-        Supplier<T> supplier = this.getDynamicValue(propertyName, type);
+    public <T> T getValue(Class<T> type) {
+        Supplier<T> supplier = this.getDynamicValue(type);
         if (supplier != null)
             return supplier.get();
         return null;
@@ -168,7 +164,14 @@ public class PropertiesComponentConfiguration extends AbstractPropertiesComponen
     
     @Override
     public String toString() {
-        return "PropertiesComponentConfiguration [props=" + props + "]";
+        return new StringBuilder()
+            .append("PropertiesComponentConfiguration[")
+            .append("id=").append(getId())
+            .append(",type=").append(getType())
+            .append(",full=").append(getFullName())
+            .append(",props=").append(props)
+            .append("]")
+            .toString();
     }
     
     @Override

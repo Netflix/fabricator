@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
 import com.google.common.base.Supplier;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderFactory;
 import com.netflix.fabricator.supplier.ListenableSupplier;
@@ -33,8 +33,9 @@ public class DynamicDoubleBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
                 @Override
-                public boolean bind(Object obj, ComponentConfiguration config) throws Exception {
-                    Supplier<?> supplier = config.getDynamicValue(propertyName, Double.class);
+                public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                    ConfigurationNode child = node.getChild(propertyName);
+                    Supplier<?> supplier = child.getDynamicValue(Double.class);
                     if (supplier != null) {
                         //invoke method only when property exists. Otherwise, let builder
                         //plug-in default values

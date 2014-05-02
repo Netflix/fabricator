@@ -17,9 +17,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.MapDifference.ValueDifference;
-import com.netflix.fabricator.ComponentConfiguration;
 import com.netflix.fabricator.ComponentConfigurationResolver;
 import com.netflix.fabricator.ComponentType;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
@@ -74,7 +74,7 @@ public class BaseComponentRefreshService<T> {
      * List of 'known' configurations.  We keep this outside of what's in the ComponentManager
      * so we can keep track of the raw configuration
      */
-    private Map<String, ComponentConfiguration> configs = ImmutableMap.of();
+    private Map<String, ConfigurationNode> configs = ImmutableMap.of();
     
     @Inject
     public BaseComponentRefreshService(
@@ -110,11 +110,11 @@ public class BaseComponentRefreshService<T> {
             @Override
             public void run() {
                 // Get a snapshot of the current configuration
-                Map<String, ComponentConfiguration> newConfigs = configResolver.getAllConfigurations();
-                MapDifference<String, ComponentConfiguration> diff = Maps.difference(newConfigs, configs);
+                Map<String, ConfigurationNode> newConfigs = configResolver.getAllConfigurations();
+                MapDifference<String, ConfigurationNode> diff = Maps.difference(newConfigs, configs);
                 
                 // new configs
-                for (Entry<String, ComponentConfiguration> entry : diff.entriesOnlyOnLeft().entrySet()) {
+                for (Entry<String, ConfigurationNode> entry : diff.entriesOnlyOnLeft().entrySet()) {
                     LOG.info("Adding config: " + entry.getKey() + " " + entry.getValue().toString());
                     try {
                         manager.load(entry.getValue());
@@ -125,13 +125,13 @@ public class BaseComponentRefreshService<T> {
                 }
                 
                 // removed configs
-                for (Entry<String, ComponentConfiguration> entry : diff.entriesOnlyOnRight().entrySet()) {
+                for (Entry<String, ConfigurationNode> entry : diff.entriesOnlyOnRight().entrySet()) {
                     LOG.info("Remove config: " + entry.getKey() + " " + entry.getValue().toString());
                     manager.remove(entry.getKey());
                 }
                 
                 // modified configs
-                for (Entry<String, ValueDifference<ComponentConfiguration>> entry : diff.entriesDiffering().entrySet()) {
+                for (Entry<String, ValueDifference<ConfigurationNode>> entry : diff.entriesDiffering().entrySet()) {
                     LOG.info("Replace config: " + entry.getKey() + " " + entry.getValue().toString());
                     try {
                         manager.replace(entry.getValue().leftValue());

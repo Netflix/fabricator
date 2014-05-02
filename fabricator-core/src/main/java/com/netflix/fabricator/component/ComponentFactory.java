@@ -2,7 +2,7 @@ package com.netflix.fabricator.component;
 
 import java.util.Map;
 
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.PropertyInfo;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
@@ -23,7 +23,7 @@ public interface ComponentFactory<T> {
      * @throws ComponentCreationException 
      * @throws ComponentAlreadyExistsException
      */
-    T create(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
+    T create(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     /**
      * Return configuration properties of T

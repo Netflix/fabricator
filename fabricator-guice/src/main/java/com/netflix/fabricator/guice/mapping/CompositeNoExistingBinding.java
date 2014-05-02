@@ -3,7 +3,7 @@ package com.netflix.fabricator.guice.mapping;
 import com.google.common.base.Preconditions;
 import com.google.inject.Injector;
 import com.netflix.fabricator.BindingComponentFactory;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 
 import java.lang.reflect.Method;
 
@@ -23,8 +23,8 @@ public class CompositeNoExistingBinding implements BindingReslove {
     }
 
     @Override
-    public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
-        ComponentConfiguration subConfig = config.getChild(propertyName);
+    public boolean execute(String name, Object obj, ConfigurationNode config, Class<?> argType, Injector injector, Method method) throws Exception {
+        ConfigurationNode subConfig = config.getChild(propertyName);
         if (subConfig != null) {
             Object subObject = provider.get().create(subConfig);
             method.invoke(obj, subObject);

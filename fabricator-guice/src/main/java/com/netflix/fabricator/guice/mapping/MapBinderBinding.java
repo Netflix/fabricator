@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.util.Types;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class MapBinderBinding implements BindingReslove {
     @Override
-    public boolean execute(String name, Object obj, ComponentConfiguration config, Class<?> argType, Injector injector, Method method) throws Exception {
+    public boolean execute(String name, Object obj, ConfigurationNode config, Class<?> argType, Injector injector, Method method) throws Exception {
         // Look for a MapBinder binding
         TypeLiteral<Map<String, ?>> mapLiteral = (TypeLiteral<Map<String, ?>>) TypeLiteral.get(
                 Types.mapOf(String.class, argType));

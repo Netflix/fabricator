@@ -27,8 +27,8 @@ public class SimplePropertyBinderFactoryResolver implements PropertyBinderResolv
             BooleanBinderFactory.get(),
             IntegerBinderFactory.get(),
             EnumBinderFactory.get(),
-            PropertiesBinderFactory.get(),
-            ClassBinderFactory.get()
+            ClassBinderFactory.get(),
+            PropertiesBinderFactory.get()
             );
     
     private final List<PropertyBinderFactory> propertyBinders;
@@ -41,6 +41,10 @@ public class SimplePropertyBinderFactoryResolver implements PropertyBinderResolv
             this.propertyBinders = Lists.newArrayList();
         this.propertyBinders.addAll(DEFAULT_PROPERTY_FACTORIES);
         this.injector = injector;
+    }
+    
+    public SimplePropertyBinderFactoryResolver() {
+    	this(null, null);
     }
     
     @Override

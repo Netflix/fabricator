@@ -3,12 +3,10 @@ package com.netflix.fabricator.properties;
 import java.util.Map;
 import java.util.Properties;
 
-
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 
 public class PropertiesTypeConfigurationResolverTest {
     @Test
@@ -21,14 +19,14 @@ public class PropertiesTypeConfigurationResolverTest {
         properties.put("id1.someothertype.a", "_a");
         
         PropertiesTypeConfigurationResolver resolver = new PropertiesTypeConfigurationResolver(properties, null);
-        Map<String, ComponentConfiguration> someTypeConfigs = resolver.getConfigurationFactory("sometype").getAllConfigurations();
+        Map<String, ConfigurationNode> someTypeConfigs = resolver.getConfigurationFactory("sometype").getAllConfigurations();
         Assert.assertEquals(3, someTypeConfigs.keySet().size());
-        Assert.assertEquals("_a1", someTypeConfigs.get("id1").getValue("a", String.class));
-        Assert.assertEquals("_a2", someTypeConfigs.get("id2").getValue("a", String.class));
-        Assert.assertEquals("_a3", someTypeConfigs.get("id3").getValue("a", String.class));
+        Assert.assertEquals("_a1", someTypeConfigs.get("id1").getChild("a").getValue(String.class));
+        Assert.assertEquals("_a2", someTypeConfigs.get("id2").getChild("a").getValue(String.class));
+        Assert.assertEquals("_a3", someTypeConfigs.get("id3").getChild("a").getValue(String.class));
         
-        Map<String, ComponentConfiguration> someOtherTypeConfigs = resolver.getConfigurationFactory("someothertype").getAllConfigurations();
+        Map<String, ConfigurationNode> someOtherTypeConfigs = resolver.getConfigurationFactory("someothertype").getAllConfigurations();
         Assert.assertEquals(1, someOtherTypeConfigs.keySet().size());
-        Assert.assertEquals("_a", someOtherTypeConfigs.get("id1").getValue("a", String.class));
+        Assert.assertEquals("_a", someOtherTypeConfigs.get("id1").getChild("a").getValue(String.class));
     }
 }

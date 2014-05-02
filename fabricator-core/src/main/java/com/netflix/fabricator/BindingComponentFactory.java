@@ -37,7 +37,7 @@ public class BindingComponentFactory<T>  {
     private final ComponentFactory<T>        factory;
     
     public static interface Instantiator {
-        public Object create(ComponentConfiguration config) throws Exception ;
+        public Object create(ConfigurationNode config) throws Exception ;
     }
     
     /**
@@ -69,7 +69,7 @@ public class BindingComponentFactory<T>  {
             if (Builder.class.isAssignableFrom(clazz)) {
                 this.builderClass = clazz;
                 this.instantiator = new Instantiator() {
-                    public Object create(@Nullable ComponentConfiguration config) {
+                    public Object create(@Nullable ConfigurationNode config) {
                         return (Builder<?>) injector.getInstance(clazz);
                     }
                 };
@@ -80,7 +80,7 @@ public class BindingComponentFactory<T>  {
                 final Method method = clazz.getMethod(BUILDER_METHOD_NAME);
                 this.builderClass = method.invoke(null, (Object[])null).getClass();
                 this.instantiator = new Instantiator() {
-                    public Object create(ComponentConfiguration config) throws Exception {
+                    public Object create(ConfigurationNode config) throws Exception {
                         Object obj = method.invoke(null, (Object[])null);
                         injector.injectMembers(obj);
                         return obj;
@@ -94,7 +94,7 @@ public class BindingComponentFactory<T>  {
                 if (inner.getSimpleName().equals("Builder")) {
                     this.builderClass = inner;
                     this.instantiator = new Instantiator() {
-                        public Object create(ComponentConfiguration config) {
+                        public Object create(ConfigurationNode config) {
                             return injector.getInstance(inner);
                         }
                     };
@@ -109,7 +109,7 @@ public class BindingComponentFactory<T>  {
         this.factory = new ComponentFactory<T>() {
             @SuppressWarnings("unchecked")
             @Override
-            public T create(ComponentConfiguration config) {
+            public T create(ConfigurationNode config) {
                 try {
                     // 1. Create an instance of the builder.  This still will also do basic
                     //    dependency injection using @Inject.  Named injections will be handled
@@ -142,7 +142,7 @@ public class BindingComponentFactory<T>  {
         };
     }
 
-    private void mapId(Object builder, ComponentConfiguration config) throws Exception {
+    private void mapId(Object builder, ConfigurationNode config) throws Exception {
         if (config.getId() != null) {
             Method idMethod = null;
             try {
@@ -173,9 +173,9 @@ public class BindingComponentFactory<T>  {
      * @param config
      * @throws Exception
      */
-    private void mapConfiguration(Object obj, ComponentConfiguration config) throws Exception {
+    private void mapConfiguration(Object obj, ConfigurationNode config) throws Exception {
         for (Entry<String, PropertyInfo> prop : properties.entrySet()) {
-            LOG.trace("Mapping property : " + prop.getKey() + " to " + config.getValue(prop.getKey(), String.class));
+            LOG.trace("Mapping property : " + prop.getKey() + " to " + config.getValue(String.class));
             try {
                 prop.getValue().apply(obj, config);
             }

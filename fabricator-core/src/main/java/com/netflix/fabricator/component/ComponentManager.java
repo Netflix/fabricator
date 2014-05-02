@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import rx.Observable;
 
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 
@@ -48,10 +48,10 @@ public interface ComponentManager<T> {
      * @throws ComponentAlreadyExistsException 
      * @throws ComponentCreationException 
      */
-    public T load(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public T load(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException;
     
     @Deprecated
-    public T get(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException;
+    public T get(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException;
 
     /**
      * Add an externally created entity with the specified id.  Will throw
@@ -79,7 +79,7 @@ public interface ComponentManager<T> {
      * @param config
      * @throws ComponentCreationException
      */
-    public T replace(ComponentConfiguration config) throws ComponentCreationException;
+    public T replace(ConfigurationNode config) throws ComponentCreationException;
     
     /**
      * Apply the following function under a lock

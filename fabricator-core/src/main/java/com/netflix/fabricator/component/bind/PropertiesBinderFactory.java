@@ -3,7 +3,7 @@ package com.netflix.fabricator.component.bind;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderFactory;
 
@@ -24,8 +24,9 @@ public class PropertiesBinderFactory implements PropertyBinderFactory {
         
         return new PropertyBinder() {
             @Override
-            public boolean bind(Object obj, ComponentConfiguration config) throws Exception {
-                Properties props = config.getValue(propertyName, Properties.class);
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                ConfigurationNode child = node.getChild(propertyName);
+                Properties props = child.getValue(Properties.class);
                 if (props != null) {
                     method.invoke(obj, props);
                     return true;

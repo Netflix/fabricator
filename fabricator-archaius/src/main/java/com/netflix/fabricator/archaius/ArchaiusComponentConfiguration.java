@@ -1,6 +1,8 @@
 package com.netflix.fabricator.archaius;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -10,11 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicProperty;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.properties.AbstractPropertiesComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
@@ -60,15 +63,14 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
     
     @SuppressWarnings("unchecked")
     @Override
-    public <T> ListenableSupplier<T> getDynamicValue(final String propertyName, Class<T> type) {
-        final DynamicProperty prop = DynamicProperty.getInstance(getPrefix() + propertyName);
+    public <T> ListenableSupplier<T> getDynamicValue(Class<T> type) {
+        final DynamicProperty prop = DynamicProperty.getInstance(getFullName());
         if ( String.class.isAssignableFrom(type) ) {
             return (ListenableSupplier<T>) new DynamicListenableSupplier<String>(prop) {
                 @Override
                 public String get() {
                     return prop.getString();
                 }
-
             };
         }
         else if ( Boolean.class.isAssignableFrom(type) || 
@@ -118,11 +120,11 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
             return (ListenableSupplier<T>) new DynamicListenableSupplier<Properties>(prop) {
                 @Override
                 public Properties get() {
-                    if (config.containsKey(getPrefix() + propertyName)) {
-                        throw new RuntimeException(propertyName + " is not a root for a properties structure");
+                    if (config.containsKey(getFullName())) {
+                        throw new RuntimeException(getFullName() + " is not a root for a properties structure");
                     }
                     
-                    String prefix = getPrefix() + propertyName;
+                    String prefix = getFullName() + ".";
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(config.getKeys(prefix))) {
                         if (prop.startsWith(prefix)) {
@@ -134,34 +136,33 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
             };
         }
         else {
-            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), propertyName));
+            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), getFullName()));
         }
 
         return null;
     }
 
     @Override
-    public ComponentConfiguration getChild(String name) {
-        String prefix = new StringBuilder().append(getPrefix()).append(name).append(".").toString();
-        String typePropertyName = prefix + "type";
+    public ConfigurationNode getChild(String name) {
+        String fullName = Joiner.on(".").skipNulls().join(getFullName(), name);
         
         return new ArchaiusComponentConfiguration(
-                null, 
-                config.getString(typePropertyName),
+                name, 
+                config.getString(Joiner.on(".").skipNulls().join(fullName, "type")),
                 config, 
-                prefix);
+                fullName);
     }
 
     @Override
-    public boolean isSimpleProperty(String propertyName) {
-        if (config.containsKey(getPrefix() + propertyName)) {
+    public boolean isSingle() {
+        if (config.containsKey(getFullName())) {
             return true;
         }
         return false;   // TODO: Look for sub properties
     }
 
     @Override
-    public boolean hasProperty(String propertyName) {
+    public boolean hasChild(String propertyName) {
         return true;
     }
 
@@ -172,8 +173,8 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
     }
 
     @Override
-    public <T> T getValue(String propertyName, Class<T> type) {
-        Supplier<T> supplier = this.getDynamicValue(propertyName, type);
+    public <T> T getValue(Class<T> type) {
+        Supplier<T> supplier = this.getDynamicValue(type);
         if (supplier != null)
             return supplier.get();
         return null;

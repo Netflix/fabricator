@@ -3,7 +3,7 @@ package com.netflix.fabricator.guice;
 import java.lang.reflect.Method;
 
 import com.netflix.fabricator.BindingComponentFactory;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.InjectionSpi;
 import com.netflix.fabricator.PropertyBinder;
 import com.netflix.fabricator.PropertyBinderResolver;
@@ -22,10 +22,9 @@ import com.google.inject.spi.Toolable;
 import com.netflix.fabricator.guice.mapping.ComponentManagerBinding;
 import com.netflix.fabricator.guice.mapping.CompositeExistingBinding;
 import com.netflix.fabricator.guice.mapping.CompositeInterfaceBinding;
-import com.netflix.fabricator.guice.mapping.CompositePropertyInjection;
 import com.netflix.fabricator.guice.mapping.MapBinderBinding;
 import com.netflix.fabricator.guice.mapping.NamedInjectionBinding;
-import com.netflix.fabricator.guice.mapping.SimplePropertyInjection;
+import com.netflix.fabricator.guice.mapping.PropertyInjection;
 
 /**
  * Utility class for creating a binding between a type string name and an
@@ -84,13 +83,13 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
     
     @Override
     public PropertyBinder createInjectableProperty(final String propertyName, Class<?> argType, Method method) {
-        final SimplePropertyInjection simplePropertyInjection = new SimplePropertyInjection(argType, injector, method);
+        final PropertyInjection simplePropertyInjection = new PropertyInjection(argType, injector, method);
         simplePropertyInjection
                 .addStrategy(new NamedInjectionBinding())
                 .addStrategy(new MapBinderBinding())
                 .addStrategy(new ComponentManagerBinding(propertyName));
         
-        final CompositePropertyInjection compositePropertyInjection = new CompositePropertyInjection(argType, injector, method);
+        final PropertyInjection compositePropertyInjection = new PropertyInjection(argType, injector, method);
         compositePropertyInjection
                 .addStrategy(new CompositeInterfaceBinding(propertyName))
                 .addStrategy(new CompositeExistingBinding(propertyName))
@@ -102,14 +101,13 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
         //Any successful step will terminate the sequence
         return new PropertyBinder() {
             @Override
-            public boolean bind(Object obj, ComponentConfiguration config)
-                    throws Exception {
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
                 // Property value is a simple 'string'
                 // Look for 'named' binding or 'key' in a mapbinder
-                if (config.isSimpleProperty(propertyName)) {
-                    String value = config.getValue(propertyName, String.class);
+                if (node.isSingle()) {
+                    String value = node.getValue(String.class);
                     if (value != null) {
-                        if (simplePropertyInjection.execute(value, obj, config)) {
+                        if (simplePropertyInjection.execute(value, obj, node)) {
                             return true;
                         }
                     } 
@@ -120,7 +118,7 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
                 }
                 // Property is a structure
                 else {
-                    return compositePropertyInjection.execute(null, obj, config);
+                    return compositePropertyInjection.execute(null, obj, node);
                 }
             }
         };        

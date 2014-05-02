@@ -1,6 +1,6 @@
 package com.netflix.fabricator.properties;
 
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 
 /**
  * Base source for 'properties' driven configuration where each 'child' 
@@ -9,26 +9,34 @@ import com.netflix.fabricator.ComponentConfiguration;
  * @author elandau
  *
  */
-public abstract class AbstractPropertiesComponentConfiguration implements ComponentConfiguration {
+public abstract class AbstractPropertiesComponentConfiguration implements ConfigurationNode {
+    /**
+     * This is the property/field name
+     */
     private final String     id;
+    
+    /**
+     * Element type stored in this property.
+     * 
+     * TODO: may considering moving this out
+     */
     private final String     type;
-    private final String     prefix;
+    
+    /**
+     * This is the full property name with prefix
+     */
+    private final String     fullName;
     
     public AbstractPropertiesComponentConfiguration(String id, String type) {
         this.id    = id;
         this.type  = type;
-        this.prefix = "";
+        this.fullName = "";
     }
     
-    public AbstractPropertiesComponentConfiguration(String id, String type, String prefix) {
+    public AbstractPropertiesComponentConfiguration(String id, String type, String fullName) {
         this.id     = id;
         this.type   = type;
-        if (prefix.endsWith(".")) {
-            this.prefix = prefix;
-        }
-        else {
-            this.prefix = prefix + ".";
-        }
+        this.fullName = fullName;
     }
     
     @Override
@@ -41,7 +49,7 @@ public abstract class AbstractPropertiesComponentConfiguration implements Compon
         return type;
     }
     
-    public String getPrefix() {
-        return this.prefix;
+    public String getFullName() {
+        return this.fullName;
     }
 }

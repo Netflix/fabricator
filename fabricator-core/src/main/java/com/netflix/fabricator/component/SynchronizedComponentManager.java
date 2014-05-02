@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.netflix.fabricator.ComponentType;
 import com.netflix.fabricator.ComponentConfigurationResolver;
-import com.netflix.fabricator.ComponentConfiguration;
+import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
@@ -69,7 +69,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
                 component = components.get(id);
                 if (component == null) {
                     // Get configuration context from default configuration
-                    ComponentConfiguration config = configResolver.getConfiguration(id);
+                    ConfigurationNode config = configResolver.getConfiguration(id);
                     if (config != null) {
                         // Create the object
                         component = getComponentFactory(config.getType()).create(config);
@@ -150,13 +150,13 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
     
     @Override
-    public synchronized T get(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException {
+    public synchronized T get(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException {
         return load(config);
     }
 
     
     @Override
-    public synchronized T load(ComponentConfiguration config) throws ComponentAlreadyExistsException, ComponentCreationException {
+    public synchronized T load(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException {
         Preconditions.checkNotNull(config,         "Configuration cannot be null");
         Preconditions.checkNotNull(config.getId(), "Configuration must have an id");
         
@@ -220,7 +220,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
 
     @Override
-    public synchronized T replace(ComponentConfiguration config) throws ComponentCreationException {
+    public synchronized T replace(ConfigurationNode config) throws ComponentCreationException {
         Preconditions.checkNotNull(config,         "Configuration cannot be null");
         Preconditions.checkNotNull(config.getId(), "Configuration must have an id");
         

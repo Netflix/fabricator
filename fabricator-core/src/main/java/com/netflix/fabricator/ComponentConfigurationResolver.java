@@ -16,12 +16,12 @@ public interface ComponentConfigurationResolver {
      * @param id
      * @return
      */
-    public ComponentConfiguration getConfiguration(String id);
+    public ConfigurationNode getConfiguration(String id);
     
     /**
      * Return a map of ALL component configurations for this type.
      * 
      * @return A map where key=id and value=the configuration
      */
-    public Map<String, ComponentConfiguration> getAllConfigurations();
+    public Map<String, ConfigurationNode> getAllConfigurations();
 }
