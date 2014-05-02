@@ -22,18 +22,17 @@ public class DoubleBinderFactory implements PropertyBinderFactory {
             return null;
         }
         return new PropertyBinder() {
-                @Override
-                public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                    ConfigurationNode child = node.getChild(propertyName);
-                    Object value = child.getValue(Double.class);
-                    if (value != null) {
-                        method.invoke(obj, value);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            @Override
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                Object value = node.getValue(Double.class);
+                if (value != null) {
+                    method.invoke(obj, value);
+                    return true;
                 }
-            };    
+                else {
+                    return false;
+                }
+            }
+        };    
     }
 }

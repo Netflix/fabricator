@@ -32,23 +32,22 @@ public class DynamicBooleanBinderFactory implements PropertyBinderFactory {
         }
         
         return new PropertyBinder() {
-                @Override
-                public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                    ConfigurationNode child = node.getChild(propertyName);
-                    Supplier<?> supplier = child.getDynamicValue(Boolean.class);
-                    if (supplier != null) {
-                        //invoke method only when property exists. Otherwise, let builder
-                        //plug-in default values
-                        if (supplier.get() != null) {
-                            method.invoke(obj, supplier);
-                        }
-                        return true;
+            @Override
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                Supplier<?> supplier = node.getDynamicValue(Boolean.class);
+                if (supplier != null) {
+                    //invoke method only when property exists. Otherwise, let builder
+                    //plug-in default values
+                    if (supplier.get() != null) {
+                        method.invoke(obj, supplier);
                     }
-                    else {
-                        //Shouldn't happen
-                        return false;
-                    }
+                    return true;
                 }
-            };    
+                else {
+                    //Shouldn't happen
+                    return false;
+                }
+            }
+        };    
     }
 }

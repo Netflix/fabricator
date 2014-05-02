@@ -14,12 +14,6 @@ import java.lang.reflect.ParameterizedType;
  * Created by hyuan on 1/17/14.
  */
 public class CompositeExistingBinding implements BindingReslove {
-    private final String propertyName; 
-
-    public CompositeExistingBinding(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
     @Override
     public boolean execute(String name, Object obj, ConfigurationNode node, Class<?> argType, Injector injector, Method method) throws Exception {
         ParameterizedType subType = Types.newParameterizedType(ComponentFactory.class, argType);

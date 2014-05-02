@@ -7,6 +7,7 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
@@ -30,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -98,7 +101,7 @@ public class ComponentManagerTest {
      * @author elandau
      *
      */
-    @TypeImplementation("policy")
+    @Type("policy")
     public static interface Policy {
     }
 
@@ -536,6 +539,9 @@ public class ComponentManagerTest {
                     }
                 }
         );
+        
+        Assert.assertNotNull(injector.getBinding(Key.get(new TypeLiteral<Map<String, Provider<ComponentFactory<Policy>>>>() {})));
+        Assert.assertNotNull(injector.getBinding(Key.get(new TypeLiteral<Map<String, Provider<ComponentFactory<Policy>>>>() {})));
 
         ComponentManager<SomeInterface> ifmanager = injector.getInstance(Key.get(new TypeLiteral<ComponentManager<SomeInterface>>() {}));
         BaseA if1 = (BaseA)ifmanager.get("id1");

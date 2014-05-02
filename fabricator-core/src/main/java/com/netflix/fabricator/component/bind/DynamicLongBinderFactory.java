@@ -34,8 +34,7 @@ public class DynamicLongBinderFactory implements PropertyBinderFactory {
         return new PropertyBinder() {
                 @Override
                 public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                    ConfigurationNode child = node.getChild(propertyName);
-                    Supplier<?> supplier = child.getDynamicValue(Long.class);
+                    Supplier<?> supplier = node.getDynamicValue(Long.class);
                     if (supplier != null) {
                         //invoke method only when property exists. Otherwise, let builder
                         //plug-in default values

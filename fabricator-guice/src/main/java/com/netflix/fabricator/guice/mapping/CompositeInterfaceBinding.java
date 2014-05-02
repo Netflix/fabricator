@@ -15,15 +15,8 @@ import java.util.Map;
  * Created by hyuan on 1/17/14.
  */
 public class CompositeInterfaceBinding implements BindingReslove {
-    private final String propertyName;
-
-    public CompositeInterfaceBinding(String propertyName) {
-        this.propertyName = propertyName;
-    }
-
     @Override
-    public boolean execute(String name, Object obj, ConfigurationNode config, Class<?> argType, Injector injector, Method method) throws Exception {
-        ConfigurationNode subConfig = config.getChild(propertyName);
+    public boolean execute(String name, Object obj, ConfigurationNode node, Class<?> argType, Injector injector, Method method) throws Exception {
         if (argType.isInterface()) {
             TypeLiteral<Map<String, ComponentFactory<?>>> mapType =
                     (TypeLiteral<Map<String, ComponentFactory<?>>>) TypeLiteral.get(
@@ -37,14 +30,14 @@ public class CompositeInterfaceBinding implements BindingReslove {
             Binding<Map<String, ComponentFactory<?>>> binding = injector.getExistingBinding(mapKey);
             
             if (binding != null) {
-                if (subConfig.getType() != null) {
+                if (node.getType() != null) {
                     Map<String, ComponentFactory<?>> map = binding
                             .getProvider().get();
                     ComponentFactory<?> factory = map
-                            .get(subConfig.getType());
+                            .get(node.getType());
                     if (factory != null) {
                         Object subObject = factory
-                                .create(subConfig);
+                                .create(node);
                         method.invoke(obj, subObject);
                         return true;
                     }

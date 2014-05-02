@@ -23,18 +23,17 @@ public class LongBinderFactory implements PropertyBinderFactory {
         }
         
         return new PropertyBinder() {
-                @Override
-                public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                    ConfigurationNode child = node.getChild(propertyName);
-                    Object value = child.getValue(Long.class);
-                    if (value != null) {
-                        method.invoke(obj, value);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            @Override
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                Object value = node.getValue(Long.class);
+                if (value != null) {
+                    method.invoke(obj, value);
+                    return true;
                 }
-            };    
+                else {
+                    return false;
+                }
+            }
+        };    
     }
 }

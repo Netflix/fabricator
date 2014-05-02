@@ -19,9 +19,11 @@ import com.google.inject.spi.BindingTargetVisitor;
 import com.google.inject.spi.ProviderInstanceBinding;
 import com.google.inject.spi.ProviderWithExtensionVisitor;
 import com.google.inject.spi.Toolable;
+import com.netflix.fabricator.guice.mapping.ComponentFactoryBinding;
 import com.netflix.fabricator.guice.mapping.ComponentManagerBinding;
 import com.netflix.fabricator.guice.mapping.CompositeExistingBinding;
 import com.netflix.fabricator.guice.mapping.CompositeInterfaceBinding;
+import com.netflix.fabricator.guice.mapping.CompositeNoExistingBinding;
 import com.netflix.fabricator.guice.mapping.MapBinderBinding;
 import com.netflix.fabricator.guice.mapping.NamedInjectionBinding;
 import com.netflix.fabricator.guice.mapping.PropertyInjection;
@@ -91,11 +93,10 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
         
         final PropertyInjection compositePropertyInjection = new PropertyInjection(argType, injector, method);
         compositePropertyInjection
-                .addStrategy(new CompositeInterfaceBinding(propertyName))
-                .addStrategy(new CompositeExistingBinding(propertyName))
+                .addStrategy(new CompositeInterfaceBinding())
+                .addStrategy(new CompositeExistingBinding())
+                .addStrategy(new MapBinderBinding())
                 ;
-                //can't really handle an interface type here since method type reflection won't be able to get the real method parameter type.
-//                .addStrategy(new CompositeNoExistingBinding(propertyName, factory));
         
         //Build up a sequence of Binding resolving and value retrieving processes.
         //Any successful step will terminate the sequence

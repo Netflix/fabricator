@@ -25,18 +25,17 @@ public class IntegerBinderFactory implements PropertyBinderFactory {
         }
         
         return new PropertyBinder() {
-                @Override
-                public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                    ConfigurationNode child = node.getChild(propertyName);
-                    Object value = child.getValue(Integer.class);
-                    if (value != null) {
-                        method.invoke(obj, value);
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            @Override
+            public boolean bind(Object obj, ConfigurationNode node) throws Exception {
+                Object value = node.getValue(Integer.class);
+                if (value != null) {
+                    method.invoke(obj, value);
+                    return true;
                 }
-            };    
+                else {
+                    return false;
+                }
+            }
+        };    
     }
 }

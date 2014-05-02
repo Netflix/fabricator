@@ -25,8 +25,7 @@ public class PropertiesBinderFactory implements PropertyBinderFactory {
         return new PropertyBinder() {
             @Override
             public boolean bind(Object obj, ConfigurationNode node) throws Exception {
-                ConfigurationNode child = node.getChild(propertyName);
-                Properties props = child.getValue(Properties.class);
+                Properties props = node.getValue(Properties.class);
                 if (props != null) {
                     method.invoke(obj, props);
                     return true;
