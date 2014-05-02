@@ -173,11 +173,12 @@ public class BindingComponentFactory<T>  {
      * @param config
      * @throws Exception
      */
-    private void mapConfiguration(Object obj, ConfigurationNode config) throws Exception {
+    private void mapConfiguration(Object obj, ConfigurationNode node) throws Exception {
         for (Entry<String, PropertyInfo> prop : properties.entrySet()) {
-            LOG.trace("Mapping property : " + prop.getKey() + " to " + config.getValue(String.class));
+            ConfigurationNode child = node.getChild(prop.getKey());
+            LOG.trace("Mapping property : " + prop.getKey() + " to " + child.getValue(String.class));
             try {
-                prop.getValue().apply(obj, config);
+                prop.getValue().apply(obj, child);
             }
             catch (Exception e) {
                 throw new Exception("Failed to map property: " + prop.getKey(), e);
