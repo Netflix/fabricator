@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.fabricator.ConfigurationNode;
@@ -51,11 +52,15 @@ public class JacksonComponentConfiguration implements ConfigurationNode {
 
     @Override
     public ConfigurationNode getChild(String name) {
-        return new JacksonComponentConfiguration(name, null, node.get(name));
+        JsonNode child = node.get(name);
+        if (child == null)
+            return null;
+        return new JacksonComponentConfiguration(name, null, child);
     }
 
     @Override
     public boolean isSingle() {
+        Preconditions.checkNotNull(node, String.format("Node for '%s' is null", id));
         return !node.isObject() && !node.isArray();
     }
 
