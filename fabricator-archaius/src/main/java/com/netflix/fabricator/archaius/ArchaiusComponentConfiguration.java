@@ -128,7 +128,7 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(config.getKeys(prefix))) {
                         if (prop.startsWith(prefix)) {
-                            result.setProperty(prop.substring(prefix.length()+1), config.getProperty(prop).toString());
+                            result.setProperty(prop.substring(prefix.length()), config.getProperty(prop).toString());
                         }
                     }
                     return result;
