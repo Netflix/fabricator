@@ -1,12 +1,11 @@
 package com.netflix.fabricator.archaius;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +127,10 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(config.getKeys(prefix))) {
                         if (prop.startsWith(prefix)) {
-                            result.setProperty(prop.substring(prefix.length()), config.getProperty(prop).toString());
+                            String value = DynamicProperty.getInstance(prop).getString();
+                            if (value != null) {
+                                result.setProperty(prop.substring(prefix.length()), value);
+                            }
                         }
                     }
                     return result;
