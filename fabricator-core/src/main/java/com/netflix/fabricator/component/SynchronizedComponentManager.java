@@ -96,7 +96,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         }
                 
         T oldComponent = components.put(id, component);
-        if (oldComponent == null) {
+        if (oldComponent != null) {
             try {
                 invokePreDestroy(oldComponent);
             } catch (Exception e) {
