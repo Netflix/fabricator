@@ -50,30 +50,4 @@ subprojects {
     }
 }
 
-project(':fabricator-core') {
-    dependencies {
-        testCompile 'junit:junit:4.11'
-        testCompile 'org.mockito:mockito-core:1.8.5'
-    }
-}
-
-project(':fabricator-guice') {
-    dependencies {
-        compile      project(':fabricator-core')
-        
-        testCompile 'junit:junit:4.11'
-        testCompile 'org.mockito:mockito-core:1.8.5'
-    }
-}
-
-project(':fabricator-archaius') {
-    dependencies {
-        compile      project(':fabricator-core')
-        compile      project(':fabricator-guice')
-        compile      'com.netflix.archaius:archaius-core:0.5.11'
-    
-        testCompile 'junit:junit:4.11'
-        testCompile 'org.mockito:mockito-core:1.8.5'
-    }
-}
 
