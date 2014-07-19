@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -13,15 +12,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import rx.Observable;
-import rx.functions.Action1;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.netflix.fabricator.ComponentType;
 import com.netflix.fabricator.ComponentConfigurationResolver;
+import com.netflix.fabricator.ComponentType;
 import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.annotations.Default;
