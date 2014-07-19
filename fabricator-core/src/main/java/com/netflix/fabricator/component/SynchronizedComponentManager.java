@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import rx.Observable;
+import rx.functions.Action1;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
@@ -92,7 +94,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         try {
             invokePostConstruct(component);
         } catch (Exception e) {
-            throw new ComponentCreationException("Error creating component : " + id);
+            throw new ComponentCreationException("Error creating component : " + id, e);
         }
                 
         T oldComponent = components.put(id, component);
@@ -100,7 +102,7 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             try {
                 invokePreDestroy(oldComponent);
             } catch (Exception e) {
-                LOG.error("Error destroying component : " + id);
+                LOG.error("Error destroying component : " + id, e);
             }
         }
     }
@@ -238,5 +240,4 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             throw new ComponentCreationException("Can't create component", e);
         }
     }
-
 }
