@@ -2,14 +2,6 @@ package com.netflix.fabricator.guice;
 
 import java.lang.reflect.Method;
 
-import com.netflix.fabricator.BindingComponentFactory;
-import com.netflix.fabricator.ConfigurationNode;
-import com.netflix.fabricator.InjectionSpi;
-import com.netflix.fabricator.PropertyBinder;
-import com.netflix.fabricator.PropertyBinderResolver;
-import com.netflix.fabricator.component.ComponentFactory;
-import com.netflix.fabricator.component.bind.SimplePropertyBinderFactoryResolver;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +11,19 @@ import com.google.inject.spi.BindingTargetVisitor;
 import com.google.inject.spi.ProviderInstanceBinding;
 import com.google.inject.spi.ProviderWithExtensionVisitor;
 import com.google.inject.spi.Toolable;
-import com.netflix.fabricator.guice.mapping.ComponentFactoryBinding;
-import com.netflix.fabricator.guice.mapping.ComponentManagerBinding;
-import com.netflix.fabricator.guice.mapping.CompositeExistingBinding;
-import com.netflix.fabricator.guice.mapping.CompositeInterfaceBinding;
-import com.netflix.fabricator.guice.mapping.CompositeNoExistingBinding;
-import com.netflix.fabricator.guice.mapping.MapBinderBinding;
-import com.netflix.fabricator.guice.mapping.NamedInjectionBinding;
+import com.netflix.fabricator.BindingComponentFactory;
+import com.netflix.fabricator.ConfigurationNode;
+import com.netflix.fabricator.InjectionSpi;
+import com.netflix.fabricator.PropertyBinder;
+import com.netflix.fabricator.PropertyBinderResolver;
+import com.netflix.fabricator.component.ComponentFactory;
+import com.netflix.fabricator.component.bind.SimplePropertyBinderFactoryResolver;
+import com.netflix.fabricator.guice.mapping.EmbeddedComponentManagerBinding;
+import com.netflix.fabricator.guice.mapping.NamedComponentManagerBinding;
+import com.netflix.fabricator.guice.mapping.EmbeddedComponentFactoryBinding;
+import com.netflix.fabricator.guice.mapping.EmbeddedMapToComponentFactoryBinding;
+import com.netflix.fabricator.guice.mapping.NamedMapBinding;
+import com.netflix.fabricator.guice.mapping.NamedBinding;
 import com.netflix.fabricator.guice.mapping.PropertyInjection;
 
 /**
@@ -85,18 +83,22 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
     
     @Override
     public PropertyBinder createInjectableProperty(final String propertyName, Class<?> argType, Method method) {
-        final PropertyInjection simplePropertyInjection = new PropertyInjection(argType, injector, method);
-        simplePropertyInjection
-                .addStrategy(new NamedInjectionBinding())
-                .addStrategy(new MapBinderBinding())
-                .addStrategy(new ComponentManagerBinding(propertyName));
+        // Allowable bindings for named binding 
+        final PropertyInjection namedPropertyInjection = new PropertyInjection(argType, injector, method);
+        namedPropertyInjection
+                .addStrategy(new NamedBinding())                                // T
+                .addStrategy(new NamedMapBinding())                             // Map<String, T>
+                .addStrategy(new NamedComponentManagerBinding(propertyName)     // ComponentManager<T>
+                );
         
-        final PropertyInjection compositePropertyInjection = new PropertyInjection(argType, injector, method);
-        compositePropertyInjection
-                .addStrategy(new CompositeInterfaceBinding())
-                .addStrategy(new CompositeExistingBinding())
-                .addStrategy(new MapBinderBinding())
-                ;
+        // Allowable bindings for embedded structures
+        final PropertyInjection embeddedPropertyInjection = new PropertyInjection(argType, injector, method);
+        embeddedPropertyInjection
+                .addStrategy(new EmbeddedComponentManagerBinding(propertyName)) // ComponentManager<T>
+                .addStrategy(new EmbeddedMapToComponentFactoryBinding())        // Map<String, ComponentFactory<T>>
+                .addStrategy(new EmbeddedComponentFactoryBinding())             // ComponentFactory<T>
+                .addStrategy(new NamedMapBinding()                              // Does this belong here
+                );
         
         //Build up a sequence of Binding resolving and value retrieving processes.
         //Any successful step will terminate the sequence
@@ -108,7 +110,7 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
                 if (node.isSingle()) {
                     String value = node.getValue(String.class);
                     if (value != null) {
-                        if (simplePropertyInjection.execute(value, obj, node)) {
+                        if (namedPropertyInjection.execute(value, obj, node)) {
                             return true;
                         }
                     } 
@@ -119,7 +121,7 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
                 }
                 // Property is a structure
                 else {
-                    return compositePropertyInjection.execute(null, obj, node);
+                    return embeddedPropertyInjection.execute(null, obj, node);
                 }
             }
         };        

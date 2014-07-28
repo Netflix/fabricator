@@ -36,7 +36,12 @@ public class JacksonComponentConfiguration implements ConfigurationNode {
     public JacksonComponentConfiguration(String id, String type, JsonNode node) {
         super();
         this.id = id;
-        this.type = type;
+        if (type == null && node.has("type")) {
+            this.type = node.get("type").getTextValue();
+        }
+        else {
+            this.type = type;
+        }
         this.node = node;
     }
 

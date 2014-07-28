@@ -126,7 +126,7 @@ public class BindingComponentFactory<T>  {
                     Method buildMethod = builder.getClass().getMethod(BUILD_METHOD_NAME);
                     return (T) buildMethod.invoke(builder);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(String.format("Error creating component '%s' of type '%s'", config.getId(), clazz.getName()), e);
                 }
             }
 

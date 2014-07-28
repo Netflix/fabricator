@@ -44,11 +44,21 @@ public interface ComponentManager<T> {
      * the id provided in the config.  
      * 
      * @param config
-     * @return
+     * @return Newly created component or cached component if already exists
      * @throws ComponentAlreadyExistsException 
      * @throws ComponentCreationException 
      */
     public T load(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException;
+    
+    /**
+     * Create an un-id'd component
+     * 
+     * @param config
+     * @return Newly created component
+     * @throws ComponentCreationException
+     * @throws ComponentAlreadyExistsException 
+     */
+    public T create(ConfigurationNode config) throws ComponentCreationException, ComponentAlreadyExistsException;
     
     @Deprecated
     public T get(ConfigurationNode config) throws ComponentAlreadyExistsException, ComponentCreationException;

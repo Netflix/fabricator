@@ -11,9 +11,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
+ * Look for a named component in a map binding : Map<String, T>
+ * 
  * Created by hyuan on 1/16/14.
  */
-public class MapBinderBinding implements BindingReslove {
+public class NamedMapBinding implements BindingReslove {
     @Override
     public boolean execute(String name, Object obj, ConfigurationNode config, Class<?> argType, Injector injector, Method method) throws Exception {
         // Look for a MapBinder binding

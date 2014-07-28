@@ -175,6 +175,16 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
 
     @Override
+    public T create(ConfigurationNode config) throws ComponentCreationException, ComponentAlreadyExistsException {
+        T component = getComponentFactory(config.getType()).create(config);
+        if (component == null) {
+            throw new ComponentCreationException(String.format("Error creating component type '%s' with id '%s'", componentType.getType(), config.getId()));
+        }
+        
+        return component;
+    }
+
+    @Override
     public synchronized void replace(String id, T component) throws ComponentAlreadyExistsException, ComponentCreationException {
         Preconditions.checkNotNull(id,       "Component must have a id");
         Preconditions.checkNotNull(component, "Component cannot be null");

@@ -11,9 +11,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 
 /**
+ * Look for a binding of type : ComponentFactory<T>
+ * 
  * Created by hyuan on 1/17/14.
  */
-public class CompositeExistingBinding implements BindingReslove {
+public class EmbeddedComponentFactoryBinding implements BindingReslove {
     @Override
     public boolean execute(String name, Object obj, ConfigurationNode node, Class<?> argType, Injector injector, Method method) throws Exception {
         ParameterizedType subType = Types.newParameterizedType(ComponentFactory.class, argType);

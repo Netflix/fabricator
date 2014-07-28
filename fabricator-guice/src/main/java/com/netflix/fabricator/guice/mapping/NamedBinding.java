@@ -10,9 +10,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
+ * Look for a named binding of type : T
+ *  
  * Created by hyuan on 1/16/14.
  */
-public class NamedInjectionBinding implements BindingReslove {
+public class NamedBinding implements BindingReslove {
 
     @Override
     public boolean execute(String name, Object obj, ConfigurationNode config, Class<?> argType, Injector injector, Method method) throws Exception {

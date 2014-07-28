@@ -11,12 +11,14 @@ import com.netflix.fabricator.component.ComponentManager;
 import java.lang.reflect.Method;
 
 /**
+ * Look for a named component in the binding of type : ComponentManager<T>
+ * 
  * Created by hyuan on 1/16/14.
  */
-public class ComponentManagerBinding implements BindingReslove {
+public class NamedComponentManagerBinding implements BindingReslove {
     private String propertyName;
 
-    public ComponentManagerBinding(String propertyName) {
+    public NamedComponentManagerBinding(String propertyName) {
         this.propertyName = propertyName;
     }
 
