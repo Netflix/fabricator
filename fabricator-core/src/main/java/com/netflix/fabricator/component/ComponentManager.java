@@ -38,6 +38,21 @@ public interface ComponentManager<T> {
     public T get(String id) throws ComponentCreationException, ComponentAlreadyExistsException;
     
     /**
+     * Find a existing component or return null if none exists
+     * 
+     * @param id
+     * @return Existing component with matching id or null if none exists
+     */
+    public T find(String id);
+    
+    /**
+     * Return true if the manager contains a component with the specified id
+     * @param id
+     * @return True if exists or false otherwise
+     */
+    public boolean contains(String id);
+    
+    /**
      * Get a component from a provided config that encapsulates a specific 
      * configuration such as an API requires containing JSON or property list 
      * payload.  Once created the managed entity will be registered using

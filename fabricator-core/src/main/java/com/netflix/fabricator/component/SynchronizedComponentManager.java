@@ -181,6 +181,12 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             throw new ComponentCreationException(String.format("Error creating component type '%s' with id '%s'", componentType.getType(), config.getId()));
         }
         
+        try {
+            invokePostConstruct(component);
+        } catch (Exception e) {
+            throw new ComponentCreationException("Error creating component : " + config.getId(), e);
+        }
+
         return component;
     }
 
@@ -209,12 +215,12 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             factory = factories.get(type);
         }
         if (factory == null) {
-            factory = defaultComponentFactory; //factories.get(DEFAULT_FACTORY);
+            factory = defaultComponentFactory;
         }
         if (factory == null) {
             throw new ComponentCreationException(
-                    String.format("Failed to create component. Invalid type '%s'.  Expecting one of '%s'.",
-                                  type, factories.keySet()));
+                    String.format("Failed to create component '%s'. Invalid implementation specified '%s'.  Expecting one of '%s'.",
+                                  this.componentType.getType(), type, factories.keySet()));
         }
         return factory;
     }
@@ -247,5 +253,15 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
             // This can't really happen
             throw new ComponentCreationException("Can't create component", e);
         }
+    }
+
+    @Override
+    public synchronized T find(String id) {
+        return components.get(id);
+    }
+
+    @Override
+    public synchronized boolean contains(String id) {
+        return components.containsKey(id);
     }
 }
