@@ -2,11 +2,11 @@ package com.netflix.fabricator;
 
 import java.util.Properties;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 
 public class JacksonConfigurationSourceTest {

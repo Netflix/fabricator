@@ -4,6 +4,7 @@ ext.githubProjectName = rootProject.name // Change if github project name is not
 ext {
     rxJavaVersion="0.20.4"
     governatorVersion="1.2.20"
+    jacksonVersion="2.4.1"
 }
 
 buildscript {
@@ -39,6 +40,8 @@ subprojects {
         compile     'com.google.code.findbugs:annotations:2.0.0'
         compile     'com.google.inject:guice:3.0'
         compile     'com.google.inject.extensions:guice-multibindings:3.0'
+        compile     "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+        compile     "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile     "com.netflix.governator:governator:$governatorVersion"
         compile     'commons-codec:commons-codec:1.3'
         

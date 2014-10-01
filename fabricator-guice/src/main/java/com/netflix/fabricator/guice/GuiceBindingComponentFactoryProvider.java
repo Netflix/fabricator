@@ -128,7 +128,7 @@ public class GuiceBindingComponentFactoryProvider<T> implements ProviderWithExte
     }
 
     @Override
-    public <T> T getInstance(Class<T> clazz) {
+    public <S> S getInstance(Class<S> clazz) {
         return injector.getInstance(clazz);
     }
 

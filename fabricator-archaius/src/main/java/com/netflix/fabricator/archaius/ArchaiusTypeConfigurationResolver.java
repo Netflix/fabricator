@@ -8,9 +8,9 @@ import javax.inject.Singleton;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.netflix.config.ConfigurationManager;
@@ -76,7 +76,7 @@ public class ArchaiusTypeConfigurationResolver implements TypeConfigurationResol
                             JsonNode node = mapper.readTree(json);
                             if (node.get(TYPE_FIELD) == null)
                                 throw new Exception("Missing 'type' field");
-                            return new JacksonComponentConfiguration(key, node.get(TYPE_FIELD).getTextValue(), node);
+                            return new JacksonComponentConfiguration(key, node.get(TYPE_FIELD).asText(), node);
                         } catch (Exception e) {
                             throw new RuntimeException(
                                     String.format("Unable to parse json from '%s'. (%s)", 

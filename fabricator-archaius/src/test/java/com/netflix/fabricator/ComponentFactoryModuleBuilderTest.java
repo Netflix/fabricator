@@ -6,13 +6,13 @@ import javax.annotation.Nullable;
 
 import com.netflix.fabricator.properties.PropertiesConfigurationModule;
 import com.netflix.fabricator.supplier.SupplierWithDefault;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.inject.AbstractModule;

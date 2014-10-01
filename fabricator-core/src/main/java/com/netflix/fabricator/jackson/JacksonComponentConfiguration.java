@@ -3,16 +3,15 @@ package com.netflix.fabricator.jackson;
 import java.util.Properties;
 import java.util.Set;
 
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.fabricator.ConfigurationNode;
-import com.netflix.fabricator.jackson.JacksonComponentConfiguration;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 
 public class JacksonComponentConfiguration implements ConfigurationNode {
@@ -37,7 +36,7 @@ public class JacksonComponentConfiguration implements ConfigurationNode {
         super();
         this.id = id;
         if (type == null && node.has("type")) {
-            this.type = node.get("type").getTextValue();
+            this.type = node.get("type").asText();
         }
         else {
             this.type = type;
@@ -145,7 +144,7 @@ public class JacksonComponentConfiguration implements ConfigurationNode {
                     @Override
                     public Properties get() {
                         Properties result = new Properties();
-                        for (String prop : Lists.newArrayList(node.getFieldNames())) {
+                        for (String prop : Lists.newArrayList(node.fieldNames())) {
                             result.setProperty(prop, node.get(prop).asText());
                         }
                         return result;
