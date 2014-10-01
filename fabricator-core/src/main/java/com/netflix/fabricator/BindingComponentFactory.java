@@ -78,7 +78,7 @@ public class BindingComponentFactory<T>  {
             // builder.
             else {
                 final Method method = clazz.getMethod(BUILDER_METHOD_NAME);
-                this.builderClass = method.invoke(null, (Object[])null).getClass();
+                this.builderClass = method.getReturnType();
                 this.instantiator = new Instantiator() {
                     public Object create(ConfigurationNode config) throws Exception {
                         Object obj = method.invoke(null, (Object[])null);
