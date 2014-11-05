@@ -11,8 +11,6 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import rx.Observable;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -59,30 +57,24 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     }
     
     @Override
-    public T get(String id) throws ComponentCreationException, ComponentAlreadyExistsException {
+    public synchronized T get(String id) throws ComponentCreationException, ComponentAlreadyExistsException {
         Preconditions.checkNotNull(id, String.format("Component of type '%s' must have a id", componentType.getType()));
         // Look for an existing component
         T component = components.get(id);
         if (component == null) {
-            synchronized (this) {
-                // Double check for existing component
-                component = components.get(id);
+            // Get configuration context from default configuration
+            ConfigurationNode config = configResolver.getConfiguration(id);
+            if (config != null) {
+                // Create the object
+                component = getComponentFactory(config.getType()).create(config);
                 if (component == null) {
-                    // Get configuration context from default configuration
-                    ConfigurationNode config = configResolver.getConfiguration(id);
-                    if (config != null) {
-                        // Create the object
-                        component = getComponentFactory(config.getType()).create(config);
-                        if (component == null) {
-                            throw new ComponentCreationException(String.format("Error creating component of type '%s' with id '%s'", componentType.getType(), id));
-                        }
-        
-                        addComponent(id, component);
-                    }
-                    else {
-                        throw new ComponentCreationException(String.format("No config provided for component of type '%s' with id '%s'", componentType.getType(), id));
-                    }
+                    throw new ComponentCreationException(String.format("Error creating component of type '%s' with id '%s'", componentType.getType(), id));
                 }
+
+                addComponent(id, component);
+            }
+            else {
+                throw new ComponentCreationException(String.format("No config provided for component of type '%s' with id '%s'", componentType.getType(), id));
             }
         }
         return component;
@@ -223,11 +215,6 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
                                   this.componentType.getType(), type, factories.keySet()));
         }
         return factory;
-    }
-
-    @Override
-    public Observable<T> asObservable() {
-        return Observable.from(components.values());
     }
 
     @Override

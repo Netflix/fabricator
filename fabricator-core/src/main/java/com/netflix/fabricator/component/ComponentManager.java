@@ -2,8 +2,6 @@ package com.netflix.fabricator.component;
 
 import java.util.Collection;
 
-import rx.Observable;
-
 import com.netflix.fabricator.ConfigurationNode;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
@@ -122,9 +120,4 @@ public interface ComponentManager<T> {
      * @param id
      */
     public void remove(String id);
-    
-    /**
-     * Visit all components
-     */
-    public Observable<T> asObservable();
 }

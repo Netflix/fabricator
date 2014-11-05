@@ -11,6 +11,7 @@ import com.google.inject.Provider;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import com.netflix.fabricator.ComponentType;
 import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
@@ -606,6 +607,9 @@ public class ComponentManagerTest {
                 }
         );
 
+        SomeInterface si1 = injector.getInstance(Key.get(SomeInterface.class, Names.named("id1")));
+        Assert.assertNotNull(si1);
+        
         ComponentManager<SomeInterface> ifmanager = injector.getInstance(Key.get(new TypeLiteral<ComponentManager<SomeInterface>>() {}));
         BaseD if1 = (BaseD)ifmanager.get("id1");
         logger.info("get id1 from manager: " + if1.toString());
