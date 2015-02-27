@@ -125,7 +125,7 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
                         throw new RuntimeException(getFullName() + " is not a root for a properties structure");
                     }
                     
-                    String prefix = getFullName() + ".";
+                    String prefix = getFullName();
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(config.getKeys(prefix))) {
                         result.setProperty(prop, config.getString(prop));

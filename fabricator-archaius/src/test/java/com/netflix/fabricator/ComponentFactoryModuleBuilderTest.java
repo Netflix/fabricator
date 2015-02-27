@@ -533,7 +533,7 @@ public class ComponentFactoryModuleBuilderTest {
         props.put("id3.some.properties.a",  "a");
         props.put("id3.some.properties.b.c","bc");
         props.put("id3.some.properties.d",  "true");
-        props.put("id3.some.properties.e",  123);
+        props.put("id3.some.properties.e",  "123");
         
         ConfigurationManager.loadProperties(props);
         Injector injector = Guice.createInjector(
