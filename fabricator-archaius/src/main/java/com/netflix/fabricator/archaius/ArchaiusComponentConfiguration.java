@@ -1,6 +1,9 @@
 package com.netflix.fabricator.archaius;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
@@ -12,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicProperty;
@@ -23,14 +25,14 @@ import com.netflix.fabricator.supplier.ListenableSupplier;
 public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(ArchaiusComponentConfiguration.class);
     
-    private final AbstractConfiguration config;
-    
     public static ArchaiusComponentConfiguration forPrefix(String prefix) {
         AbstractConfiguration config = ConfigurationManager.getConfigInstance();
         String type = config.getString(prefix + "type");
         String id = StringUtils.substringAfterLast(prefix, ".");
         return new ArchaiusComponentConfiguration(id, type, config, prefix);
     }
+    
+    private final AbstractConfiguration config;
     
     public ArchaiusComponentConfiguration(String id, String type, AbstractConfiguration config, String prefix) {
         super(id, type, prefix);
@@ -126,12 +128,7 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
                     String prefix = getFullName() + ".";
                     Properties result = new Properties();
                     for (String prop : Lists.newArrayList(config.getKeys(prefix))) {
-                        if (prop.startsWith(prefix)) {
-                            String value = DynamicProperty.getInstance(prop).getString();
-                            if (value != null) {
-                                result.setProperty(prop.substring(prefix.length()), value);
-                            }
-                        }
+                        result.setProperty(prop, config.getString(prop));
                     }
                     return result;
                 }
@@ -174,11 +171,63 @@ public class ArchaiusComponentConfiguration extends AbstractPropertiesComponentC
         return Collections.emptySet();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getValue(Class<T> type) {
-        Supplier<T> supplier = this.getDynamicValue(type);
-        if (supplier != null)
-            return supplier.get();
-        return null;
+        String key = getFullName();
+        if ( String.class.isAssignableFrom(type) ) {
+            return (T) config.getString(key);
+        }
+        else if ( Boolean.class.isAssignableFrom(type) || 
+                  Boolean.TYPE.isAssignableFrom(type) || 
+                  boolean.class.equals(type)) {
+            return (T) config.getBoolean(key, null);
+        }
+        else if ( Integer.class.isAssignableFrom(type) 
+                  || Integer.TYPE.isAssignableFrom(type) 
+                  || int.class.equals(type)) {
+            return (T) config.getInteger(key, null);
+        }
+        else if ( Long.class.isAssignableFrom(type) 
+                  || Long.TYPE.isAssignableFrom(type) 
+                  || long.class.equals(type)) {
+            return (T) config.getLong(key, null);
+        }
+        else if ( Double.class.isAssignableFrom(type) 
+                  || Double.TYPE.isAssignableFrom(type) 
+                  || double.class.equals(type))  {
+            return (T) config.getDouble(key, null);
+        }
+        else if ( Short.class.isAssignableFrom(type) 
+                || Short.TYPE.isAssignableFrom(type) 
+                || short.class.equals(type)) {
+            return (T) config.getShort(key, null);
+        }
+        else if ( Float.class.isAssignableFrom(type) 
+                || Float.TYPE.isAssignableFrom(type) 
+                || float.class.equals(type)) {
+            return (T) config.getFloat(key, null);
+        }
+        else if ( BigDecimal.class.isAssignableFrom(type) ) {
+            return (T) config.getBigDecimal(key, null);
+        }
+        else if ( BigInteger.class.isAssignableFrom(type) ) {
+            return (T) config.getBigInteger(key, null);
+        }
+        else if ( Properties.class.isAssignableFrom(type)) {
+            String prefix = getFullName();
+            Properties result = new Properties();
+            Configuration sub = config.subset(prefix);
+            Iterator<String> iter = sub.getKeys();
+            while (iter.hasNext()) {
+                String propName = iter.next();
+                result.setProperty(propName, sub.getString(propName));
+            }
+            return (T) result;
+        }
+        else {
+            LOG.warn(String.format("Unknown type '%s' for property '%s'", type.getCanonicalName(), getFullName()));
+            return null;
+        }
     }
 }

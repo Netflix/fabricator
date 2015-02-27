@@ -1,5 +1,17 @@
 package com.netflix.fabricator.component;
 
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Nullable;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.inject.AbstractModule;
@@ -12,29 +24,17 @@ import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.netflix.config.ConfigurationManager;
 import com.netflix.fabricator.ComponentType;
-import com.netflix.fabricator.annotations.TypeImplementation;
 import com.netflix.fabricator.annotations.Type;
-import com.netflix.fabricator.component.ComponentManager;
-import com.netflix.fabricator.component.ComponentManagerTest;
-import com.netflix.fabricator.component.SynchronizedComponentManager;
+import com.netflix.fabricator.annotations.TypeImplementation;
+import com.netflix.fabricator.archaius.ArchaiusConfigurationModule;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 import com.netflix.fabricator.guice.ComponentModuleBuilder;
 import com.netflix.fabricator.properties.PropertiesConfigurationModule;
 import com.netflix.fabricator.supplier.ListenableSupplier;
 import com.netflix.fabricator.supplier.SupplierWithDefault;
-import com.netflix.config.ConfigurationManager;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nullable;
-
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Test Driven development for Beaver library.
@@ -552,31 +552,35 @@ public class ComponentManagerTest {
     }
     
     @Test
-    public void testComponentManager() throws ComponentCreationException, ComponentAlreadyExistsException {
+    public void testComponentManager() throws ComponentCreationException, ComponentAlreadyExistsException, InterruptedException {
         final Properties props = new Properties();
-        props.put("id1.some.type",          "d");
-        props.put("id1.some.string",        "str");
-        props.put("id1.some.long",          "1");
-        props.put("id1.some.boolean",       "true");
-        props.put("id1.some.integer",       "2");
-        props.put("id1.some.double",        "2.1");
-        props.put("id1.some.properties.a",  "_a");
-        props.put("id1.some.properties.b",  "_b");
+        props.setProperty("id1.some.type",          "d");
+        props.setProperty("id1.some.string",        "str");
+        props.setProperty("id1.some.long",          "1");
+        props.setProperty("id1.some.boolean",       "true");
+        props.setProperty("id1.some.integer",       "2");
+        props.setProperty("id1.some.double",        "2.1");
+        props.setProperty("id1.some.properties.a",  "_a");
+        props.setProperty("id1.some.properties.b",  "_b");
 
-        props.put("id2.some.type",          "c");
-        props.put("id2.some.subEntity.str", "id2_subEntity_str");
+        props.setProperty("id2.some.type",          "c");
+        props.setProperty("id2.some.subEntity.str", "id2_subEntity_str");
 
-        props.put("id3.some.type",          "b");
+        props.setProperty("id3.some.type",          "b");
 
-        props.put("id4.some.type",          "a");
-        props.put("id4.some.string",        "str");
-        props.put("id4.some.dyn1",          "dyn1_value");
-        props.put("id4.some.dyn2",          "dyn2_value");
-        props.put("id4.some.policy.type",   "pb");
-        props.put("id4.some.policy.arg1",   "pb_arg1");
+        props.setProperty("id4.some.type",          "a");
+        props.setProperty("id4.some.string",        "str");
+        props.setProperty("id4.some.dyn1",          "dyn1_value");
+        props.setProperty("id4.some.dyn2",          "dyn2_value");
+        props.setProperty("id4.some.policy.type",   "pb");
+        props.setProperty("id4.some.policy.arg1",   "pb_arg1");
 
+        ConfigurationManager.getConfigInstance();
+        ConfigurationManager.loadProperties(props);
+        
+        String value = ConfigurationManager.getConfigInstance().getString("id1.some.type");
         Injector injector = Guice.createInjector(
-                new PropertiesConfigurationModule(props),
+                new ArchaiusConfigurationModule(),
                 new SomeInterfaceModule(),
                 new AbstractModule() {
                     @Override
@@ -607,6 +611,7 @@ public class ComponentManagerTest {
                 }
         );
 
+        TimeUnit.SECONDS.sleep(1);
         SomeInterface si1 = injector.getInstance(Key.get(SomeInterface.class, Names.named("id1")));
         Assert.assertNotNull(si1);
         
@@ -626,6 +631,9 @@ public class ComponentManagerTest {
         Assert.assertEquals(BaseB.class, if3.getClass());
 
         SomeInterface if4 = ifmanager.get("id4");
+        BaseA a = (BaseA)if4;
+        Assert.assertEquals(PolicyB.class, a.getPolicy().getClass());
+        Assert.assertEquals("pb_arg1", ((PolicyB)a.getPolicy()).arg1.get());
         logger.info("get id4 from manager: " + if4.toString());
         Assert.assertEquals(BaseA.class, if4.getClass());
 
