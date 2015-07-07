@@ -49,6 +49,9 @@ public class DynamicIntegerBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            public String toString() {
+                return "DynamicIntegerBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

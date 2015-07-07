@@ -177,7 +177,6 @@ public class BindingComponentFactory<T>  {
         for (Entry<String, PropertyInfo> prop : properties.entrySet()) {
             ConfigurationNode child = node.getChild(prop.getKey());
             if (child != null) {
-                LOG.trace("Mapping property : " + prop.getKey() + " to " + child.getValue(String.class));
                 try {
                     prop.getValue().apply(obj, child);
                 }

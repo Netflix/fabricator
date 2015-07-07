@@ -33,6 +33,10 @@ public class DoubleBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "DoubleBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

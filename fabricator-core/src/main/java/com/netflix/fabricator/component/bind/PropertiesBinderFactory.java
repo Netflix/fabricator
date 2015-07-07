@@ -34,6 +34,11 @@ public class PropertiesBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "PropertiesBinderFactory["+ propertyName + "]";
+            }
+
         };    
     }
 }

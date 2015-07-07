@@ -48,6 +48,10 @@ public class DynamicBooleanBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "DynamicBooleanBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

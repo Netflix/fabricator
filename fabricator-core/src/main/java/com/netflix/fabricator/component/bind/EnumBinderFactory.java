@@ -33,6 +33,9 @@ public class EnumBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            public String toString() {
+                return "EnumBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

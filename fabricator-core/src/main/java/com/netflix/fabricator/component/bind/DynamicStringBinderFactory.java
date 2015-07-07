@@ -47,7 +47,10 @@ public class DynamicStringBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "DynamicStringBinderFactory["+ propertyName + "]";
+            }
         };    
     }
-
 }

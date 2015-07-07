@@ -2,7 +2,7 @@
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
 ext {
-    governatorVersion="1.2.20"
+    governatorVersion="1.7.5"
     jacksonVersion="2.4.1"
 }
 
@@ -34,10 +34,7 @@ subprojects {
     group = "com.netflix.${githubProjectName}" // TEMPLATE: Set to organization of project
     
     dependencies {
-        compile     'com.google.guava:guava:14.0'
         compile     'com.google.code.findbugs:annotations:2.0.0'
-        compile     'com.google.inject:guice:3.0'
-        compile     'com.google.inject.extensions:guice-multibindings:3.0'
         compile     "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
         compile     "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
         compile     "com.netflix.governator:governator:$governatorVersion"

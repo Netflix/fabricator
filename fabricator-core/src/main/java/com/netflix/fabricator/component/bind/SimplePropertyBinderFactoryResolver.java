@@ -28,6 +28,11 @@ public class SimplePropertyBinderFactoryResolver implements PropertyBinderResolv
             IntegerBinderFactory.get(),
             EnumBinderFactory.get(),
             ClassBinderFactory.get(),
+            DynamicStringBinderFactory.get(),
+            DynamicLongBinderFactory.get(),
+            DynamicDoubleBinderFactory.get(),
+            DynamicBooleanBinderFactory.get(),
+            DynamicIntegerBinderFactory.get(),
             PropertiesBinderFactory.get()
             );
     

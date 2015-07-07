@@ -48,6 +48,9 @@ public class DynamicDoubleBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            public String toString() {
+                return "DynamicDoubleBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

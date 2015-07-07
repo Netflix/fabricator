@@ -33,7 +33,6 @@ public class EmbeddedComponentManagerBinding implements BindingReslove {
                 return true;
             }
             catch (Exception e) {
-                System.out.println(node.toString());
                 throw new Exception(String.format(
                         "Unable to get component '%s' (%s) for property '%s' must be one of %s",
                         name, argType.getSimpleName(), propertyName, manager.getIds()), e);

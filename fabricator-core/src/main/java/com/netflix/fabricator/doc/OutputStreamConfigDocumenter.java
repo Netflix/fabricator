@@ -12,6 +12,7 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinderBinding;
 import com.google.inject.multibindings.MultibinderBinding;
 import com.google.inject.multibindings.MultibindingsTargetVisitor;
+import com.google.inject.multibindings.OptionalBinderBinding;
 import com.google.inject.spi.DefaultBindingTargetVisitor;
 import com.netflix.fabricator.PropertyInfo;
 import com.netflix.fabricator.component.ComponentFactory;
@@ -28,7 +29,17 @@ public class OutputStreamConfigDocumenter {
     public static class Visitor
         extends DefaultBindingTargetVisitor<Object, MapBinderBinding<?>>
         implements MultibindingsTargetVisitor<Object, MapBinderBinding<?>> {
-        public MapBinderBinding<?> visit(MapBinderBinding<?> mapBinder) {
+        
+        @Override
+        public MapBinderBinding<?> visit(
+                MultibinderBinding<? extends Object> multibinding) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public MapBinderBinding<?> visit(
+                MapBinderBinding<? extends Object> mapBinder) {
             if (mapBinder.getValueTypeLiteral().getRawType().isAssignableFrom(ComponentFactory.class)) {
                 System.out.println(mapBinder.getValueTypeLiteral());
                 
@@ -44,10 +55,13 @@ public class OutputStreamConfigDocumenter {
                     }
                 }
             }
-            return mapBinder;
+            return mapBinder;        
         }
 
-        public MapBinderBinding<?> visit(MultibinderBinding<?> multibinder) {
+        @Override
+        public MapBinderBinding<?> visit(
+                OptionalBinderBinding<? extends Object> optionalbinding) {
+            // TODO Auto-generated method stub
             return null;
         }
     }

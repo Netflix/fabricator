@@ -33,6 +33,10 @@ public class BooleanBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "BooleanBinderFactory["+ propertyName + "]";
+            }
         };    
     }
 }

@@ -34,6 +34,11 @@ public class LongBinderFactory implements PropertyBinderFactory {
                     return false;
                 }
             }
+            
+            public String toString() {
+                return "LongBinderFactory["+ propertyName + "]";
+            }
+
         };    
     }
 }
