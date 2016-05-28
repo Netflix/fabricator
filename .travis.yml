@@ -3,12 +3,16 @@ jdk:
 - oraclejdk7
 sudo: false
 install: true
-script: "./buildViaTravis.sh"
+script: ./buildViaTravis.sh
 before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-before_install:
-- test $TRAVIS_PULL_REQUEST = false && openssl aes-256-cbc -K $encrypted_5d5868ca2cc9_key -iv $encrypted_5d5868ca2cc9_iv -in gradle.properties.enc -out gradle.properties -d || true
+  - $HOME/.gradle/caches/
+  - $HOME/.gradle/wrapper/
+env:
+  global:
+  - secure: uBgqKC6Hkuf66qtKR4wane7pQTeZ0/FQCCH2aI2NsvmHaWENCTb2A60YqFiaTHRbuqi8EMIXOt3ZwWAnDlTR9l3V/z5p2gfsCDNCHyu87di71p7vwJ7BILExj/d87w+GJriBn2nfUQQX6hIg5fLjKofsDv/koMMQ7sL5c8G5XqA=
+  - secure: MRo69JeU2UsD/Ebh6BWCpTGc1XOI+0zpiC6AUs6rf1BpflUrsUFRdTPzqBbljYbO2oHQS9jnuCVgh8gvFkMQkQyeAm7j8Fy5hRNYYf23X9Wn+1fVqEXCXXAwA361dA4nBFqJgoLfBatHEONXsBxw52fdGiBPllk1/1b4u58z7G4=
+  - secure: oqSEwN4H83+2ujkrdS/zmRUS7mFwmL7l+ULS7pORA+idJNzQxflNKajRHR2265I6I2nCrPHbjhywaGH1mDB5qywFlyuu5APZ4tIR9cQ6aMx6IHaki0H4hiY/1sln0IXapPTUY7YZC2PRVTC+JeCtXFBggzuReeP+gaDSZZRG+tA=
+  - secure: Xx8+gt3UCd8VV1gSN0IsEfBAZGdh9N5NWA9oaSmXSTORILukgsF/iOavMJsfTWUMTOEX6Ksm/FqkM+KckvC3qyE6QpsqvPp0N7FRJsRT2aA1zM83xsiAZMGVw+X9lDFLNfeopFL1X8gz7H0Xa5hBIq/vKMpmvO+iRzGFlbTW4GI=
