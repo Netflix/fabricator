@@ -1,24 +1,14 @@
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 apply plugin: 'osgi'
-apply plugin: 'java'
 
 dependencies {
     compile      project(':fabricator-core')
     compile      project(':fabricator-guice')
     compile      'com.netflix.archaius:archaius-core:0.6.5'
-    
+
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.8.5'
 }
 
 test {
     forkEvery = 1
-}
-
-eclipse {
-    classpath {
-        downloadSources = true
-        downloadJavadoc = true
-    }
 }

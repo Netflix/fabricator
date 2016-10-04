@@ -1,19 +1,9 @@
-apply plugin: 'idea'
-apply plugin: 'eclipse'
 apply plugin: 'osgi'
-apply plugin: 'java'
 
 dependencies {
     compile      project(':fabricator-core')
-        
+
     testCompile 'junit:junit:4.11'
     testCompile 'org.mockito:mockito-core:1.8.5'
     testCompile 'org.slf4j:slf4j-log4j12:1.6.1'
-}
-
-eclipse {
-    classpath {
-        downloadSources = true
-        downloadJavadoc = true
-    }
 }
