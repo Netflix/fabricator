@@ -101,9 +101,9 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         if (component == null)
             return;
         LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Collection<Method> postConstruct = methods.methodsFor(PostConstruct.class);
-        if (!postConstruct.isEmpty()) {
-            Iterables.getFirst(postConstruct, null).invoke(component, null);
+        Method[] postConstruct = methods.methodsFor(PostConstruct.class);
+        for (Method method : postConstruct) {
+            method.invoke(component, null);
         }
     }
 
@@ -111,9 +111,9 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         if (component == null)
             return;
         LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Collection<Method> preDestroy = methods.methodsFor(PreDestroy.class);
-        if (!preDestroy.isEmpty()) {
-            Iterables.getFirst(preDestroy, null).invoke(component, null);
+        Method[] preDestroy = methods.methodsFor(PreDestroy.class);
+        for (Method method : preDestroy) {
+            method.invoke(component, null);
         }
     }
 
