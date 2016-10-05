@@ -1,14 +1,14 @@
 package com.netflix.fabricator.util;
 
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.base.Stopwatch;
+
+import java.util.concurrent.TimeUnit;
 
 public class UnstoppableStopwatch {
     private final Stopwatch sw;
     
     public UnstoppableStopwatch() {
-        sw = new Stopwatch().start();
+        sw = Stopwatch.createStarted();
     }
     
     public long elapsed(TimeUnit units) {
