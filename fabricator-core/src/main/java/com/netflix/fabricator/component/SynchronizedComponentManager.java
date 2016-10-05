@@ -1,19 +1,7 @@
 package com.netflix.fabricator.component;
 
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.netflix.fabricator.ComponentConfigurationResolver;
@@ -24,6 +12,17 @@ import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
 import com.netflix.governator.lifecycle.LifecycleMethods;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * Implementation of a ComponentManager where each method is synchronized to guarantee
@@ -101,9 +100,9 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         if (component == null)
             return;
         LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Collection<Method> postConstruct = methods.methodsFor(PostConstruct.class);
-        if (!postConstruct.isEmpty()) {
-            Iterables.getFirst(postConstruct, null).invoke(component, null);
+        Method[] postConstruct = methods.methodsFor(PostConstruct.class);
+        for (Method method : postConstruct) {
+            method.invoke(component, null);
         }
     }
 
@@ -111,9 +110,9 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         if (component == null)
             return;
         LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Collection<Method> preDestroy = methods.methodsFor(PreDestroy.class);
-        if (!preDestroy.isEmpty()) {
-            Iterables.getFirst(preDestroy, null).invoke(component, null);
+        Method[] preDestroy = methods.methodsFor(PreDestroy.class);
+        for (Method method : preDestroy) {
+            method.invoke(component, null);
         }
     }
 
