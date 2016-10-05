@@ -2,20 +2,13 @@ plugins {
     id 'nebula.netflixoss' version '3.2.3'
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'nebula.netflixoss'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
 
     repositories {
         jcenter()
