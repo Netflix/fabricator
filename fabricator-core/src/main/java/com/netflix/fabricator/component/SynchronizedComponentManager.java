@@ -11,13 +11,14 @@ import com.netflix.fabricator.TypeConfigurationResolver;
 import com.netflix.fabricator.annotations.Default;
 import com.netflix.fabricator.component.exception.ComponentAlreadyExistsException;
 import com.netflix.fabricator.component.exception.ComponentCreationException;
-import com.netflix.governator.lifecycle.LifecycleMethods;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
@@ -96,12 +97,34 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
         }
     }
 
+    private static void fillAnnotatedMethods(Class<?> clazz, Class<? extends Annotation> annot, Map<String, Method> methods) {
+        if (clazz == null || clazz == Object.class) {
+            return;
+        }
+        
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.isSynthetic() || method.isBridge()) {
+                continue;
+            }
+    
+            if (method.isAnnotationPresent(annot)) {
+                methods.putIfAbsent(method.getName(), method);
+            }
+        }
+    
+        fillAnnotatedMethods(clazz.getSuperclass(), annot, methods);
+        for (Class<?> face : clazz.getInterfaces()) {
+            fillAnnotatedMethods(face, annot, methods);
+        }
+    }
+
+    
     private void invokePostConstruct(T component) throws Exception {
         if (component == null)
             return;
-        LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Method[] postConstruct = methods.methodsFor(PostConstruct.class);
-        for (Method method : postConstruct) {
+        Map<String, Method> methods = new LinkedHashMap<>();
+        fillAnnotatedMethods(component.getClass(), PostConstruct.class, methods);
+        for (Method method : methods.values()) {
             method.invoke(component, null);
         }
     }
@@ -109,9 +132,9 @@ public class SynchronizedComponentManager<T> implements ComponentManager<T> {
     private void invokePreDestroy(T component) throws Exception {
         if (component == null)
             return;
-        LifecycleMethods methods = new LifecycleMethods(component.getClass());
-        Method[] preDestroy = methods.methodsFor(PreDestroy.class);
-        for (Method method : preDestroy) {
+        Map<String, Method> methods = new LinkedHashMap<>();
+        fillAnnotatedMethods(component.getClass(), PreDestroy.class, methods);
+        for (Method method : methods.values()) {
             method.invoke(component, null);
         }
     }
